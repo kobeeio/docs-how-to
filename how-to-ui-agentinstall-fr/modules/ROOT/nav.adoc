@@ -1,2 +1,1 @@
-* xref:HowTo_AgentInstall.adoc[Contents]
-* xref:HowTo_AgentInstall_appendices.adoc[Appendices]
+* xref:HowTo_UIAgentInstall.adoc[Contents]
