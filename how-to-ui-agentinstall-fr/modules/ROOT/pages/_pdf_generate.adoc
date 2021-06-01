@@ -3,6 +3,8 @@
 :sectnums:
 :title: Installation de l'Agent IKAN ALM via l’application WEB
 :title-page-background-image: image:../images/_pdf_title_page_background.png[]
+:chapter-label:
+:toc-title: Table des matières
 
 :author: IKAN Development N.V., Kardinaal Mercierplein 2, 2800 Malines, BELGIQUE + \
 (C) 2006 - 2021 IKAN Development N.V. + \
