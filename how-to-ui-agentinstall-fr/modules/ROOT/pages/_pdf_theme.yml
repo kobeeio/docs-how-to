@@ -25,12 +25,12 @@ footer:
     right:
       content: '{section-or-chapter-title} | *{page-number}*'
     left:
-      content: 'Installation de l'Agent IKAN ALM via l’application WEB - {revnumber}'      
+      content: "Installation de l'Agent IKAN ALM via l’application WEB - {revnumber}"      
   verso:
     left:
       content: '*{page-number}* | {section-or-chapter-title}'
     right:
-      content: 'Installation de l'Agent IKAN ALM via l’application WEB - {revnumber}'      
+      content: "Installation de l'Agent IKAN ALM via l’application WEB - {revnumber}"
 title-page:
   font-family: Source Sans Pro  
   logo:
