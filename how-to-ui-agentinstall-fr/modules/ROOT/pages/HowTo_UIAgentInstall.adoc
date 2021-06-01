@@ -1,0 +1,615 @@
+// The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
+:imagesdir: ../images
+:description: Agent UI Installation How-to (French)
+:revnumber: v5.9
+:revdate: 01.06.2021
+
+= Installation de l'Agent IKAN ALM via l’application WEB
+
+== Objectif
+
+Si des actions de construction ou de déploiement sont planifiées sur un
+environnement local ou distant requérant une interaction avec le système
+Cible, un Agent IKAN ALM doit être installé sur cette Machine. Ce
+document technique explique la procédure d'installation d'un Agent IKAN
+ALM via l’application Web IKAN ALM (c'est-à-dire l’interface graphique).
+
+[NOTE]
+====
+Le terme "environnement distant" s'applique à un autre système
+que le système du Serveur IKAN ALM. Une construction locale sera
+exécutée sur la Machine Serveur IKAN ALM elle-même.
+====
+
+Par conséquent, ce document peut servir différents objectifs. Vérifiez
+si votre cas correspond à l’une des situations suivantes:
+
+• Vous avez installé l'application IKAN ALM Démo (qui installe le
+Serveur ainsi que l'Agent dans un conteneur Serveur Web Tomcat/Karaf
+OSGi) et vous voulez exécutez des Constructions et/ou des Déploiements
+sur une autre Machine que celle sur laquelle est installée cette
+l'application.
++
+Pour une installation Démo, l'Agent et le Serveur sont tous les deux
+exécutés sur la machine virtuelle Java du même conteneur OSGi. Notez que
+cela n'est pas la configuration recommandée pour un système de
+production puisqu'une Construction nécessitant beaucoup de mémoire peut
+causer l'arrêt du conteneur OSGi à cause d'erreurs dites
+"OutOfMemory".
+
+• Vous avez installé, ou vous avez l'intention d'installer, le Serveur
+IKAN ALM et vous voulez installer un Agent IKAN ALM sur la même Machine
+(en même temps que l'installation Serveur ou comme installation
+séparée), pour que vous puissiez exécuter des Constructions locales (ou
+même des Déploiements dans certain cas) sur la Machine Serveur. C'est la
+méthode conseillée pour exécuter des Constructions locales.
+
+• Vous avez installé le Serveur IKAN ALM et vous voulez installer un
+Agent IKAN ALM sur une autre Machine distante pour pouvoir exécuter des
+Constructions distribuées ou déployer et contrôler des Machines
+distantes.
+
+== Prérequis
+
+=== Les exigences de matériel
+
+• RAM: minimum 250 Mo (mégaoctets), recommandé 0,5 Go (gigaoctets) ou
+plus.
++
+Notez qu'il ne s'agit que de valeurs indicatives. Un Serveur de
+construction ou de déploiement peut avoir des exigences de mémoire plus
+élevées en fonction du nombre de Constructions ou de Déploiements
+exécutés simultanément. Pour une approche plus mathématique, se référer
+à l'article _Capacity Planning For Software Build Management Servers_
+sur le site de _CM Crossroads_: http://www.cmcrossroads.com/cm-journal-articles/6671-capacity-planning-for-software-build-management-servers[http://www.cmcrossroads.com/cm-journal-articles/6671-capacity-planning-for-software-build-management-servers,window=_blank].
+
+• Espace de stockage disque minimum 1 Go (gigaoctets).
++
+Il n'existe pas de règle absolue sur l'espace de stockage disque requis.
+L'espace occupé d'une installation simple d'un Agent IKAN ALM est
+inférieur à 40 Mo (mégaoctets). L'espace réel requis par un Agent dépend
+du nombre et de la taille des Projets gérés par cet Agent, et de la
+taille des ressources nécessaires pour exécuter une Construction ou un
+Déploiement. Plus il y a de projets et plus les constructions sont
+larges, plus l'espace de stockage sera nécessaire sur le disque.
+
+=== Java Virtual Machine JDK version 11 (LTS)
+
+Tous les composants IKAN ALM nécessitent un Kit de développement Java
+(JDK) 11.
+
+IKAN ALM a été testé pour fonctionner avec Oracle Java ainsi qu'avec
+Adoptium OpenJ9 JDK. Le Kit de développement logiciel (SDK) peux être
+obtenu gratuitement via le site Web d'Oracle. Les version 32 bits et 64
+bits sont toutes les deux supportées. La version de Java 11 JDK (LTS)
+peut être téléchargée sur http://www.oracle.com/technetwork/java/javase/downloads/index.html[http://www.oracle.com/technetwork/java/javase/downloads/index.html,window=_blank]
+
+=== Connexion PowerShell (Windows) ou SSH (Windows/Linux/Unix)
+
+L’installation de l’agent IKAN ALM avec l’interface utilisateur est
+gérée et envoyée du Serveur IKAN ALM à la Machine (distante) de l’Agent.
+Cela peut être fait via une connexion PowerShell (Windows) ou SSH
+(Windows, Linux ou Unix). Les deux types de connexion ont besoin d’un
+utilisateur et de données d’authentification pour fonctionner sur la
+Machine de l’Agent. Cet utilisateur a besoin de droits d’accès
+suffisants sur la Machine: écrire des fichiers, créer des répertoires,
+installer et exécuter des services ou des démons, etc. Pour plus
+d’informations sur les détails des opérations spécifiques et les
+paramètres de connexion, reportez-vous à la section correspondante.
+
+Lorsque vous optez pour le type de *connexion SSH*, la Machine cible de
+l’Agent doit exécuter un serveur SSH. Il est conseillé de tester la
+connexion du Serveur IKAN ALM avec la Machine cible de l’Agent avant de
+tenter l’installation de l’Agent. Cela peut être fait dans une interface
+de commande ou avec un client SSH comme le client OpenSSH en dehors de
+la portée d’IKAN ALM. Cela garantit que le fichier ‘known_hosts’ et
+d’autres détails SSH sont correctement configurés.
+
+Le type de *connexion PowerShell* nécessite des paramètres de sécurité
+spécifiques sur le serveur IKAN ALM et la Machine de l’Agent.
+
+Sur le serveur IKAN ALM, la stratégie d’exécution PowerShell doit être
+définie sur ‘Unrestricted’. Si ce n’est pas le cas, elle peut être
+obtenue en exécutant la commande suivante dans une invite PowerShell
+avec élévation de privilèges :
+
+[source]
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine
+
+L’étendue doit être définie sur LocalMachine pour permettre au Serveur
+IKAN ALM, s’exécutant en tant que service Windows sous le compte
+‘Système local’, d’exécuter des scripts PowerShell.
+
+Sur la Machine cible de l’Agent IKAN ALM, la communication à distance
+PowerShell doit être activée. Exécutez la commande suivante à partir
+d’une invite PowerShell avec élévation de privilèges si elle doit être
+modifiée :
+
+[source]
+Enable-PSRemoting
+
+Cela est nécessaire pour que la Machine distante de l’Agent accepte les
+sessions PowerShell distantes.
+
+Il est également important que l’utilisateur PowerShell dispose de
+*Droits d’administration* pour pouvoir installer/désinstaller l’Agent
+IKAN ALM en tant que service Windows.
+
+=== Connexion HTTP ou HTTPS avec le Serveur IKAN ALM
+
+La communication entre le Serveur et les Agents se fait via le protocole
+XML-RPC. Cela signifie qu'IKAN ALM permet de l'informatique distribuée
+(des appels de procédure à distance) en utilisant HTTP ou HTTPS comme
+protocole de transport et XML pour l'encodage (pour plus d'informations,
+se référer au site http://www.xmlrpc.com[www.xmlrpc.com,window=_blank]. Pour pouvoir
+activer l'interaction XML-RPC, une connexion TCP/IP doit être
+correctement établie entre la Machine cible pour le nouvel Agent et la
+Machine Serveur.
+
+=== Outil de script
+
+Pour pouvoir exécuter un script de construction ou de déploiement sur la
+Machine distante, l'Outil de script approprié doit être installé sur la
+Machine cible de l'Agent. IKAN ALM supporte les Outils de script Ant,
+Gradle, NAnt et Maven2. Les autres scripts (Perl, make, …) peuvent être
+appelés facilement via ces Outils de script supportés.
+
+Si vous avez besoin de plus d'informations, contactez le service de
+support. Consultez les sites Web spécifiques 
+(http://ant.apache.org[http://ant.apache.org,window=_blank],
+http://gradle.org[http://gradle.org,window=_blank],
+http://maven.apache.org[http://maven.apache.org,window=_blank] et
+http://nant.sourceforge.net[http://nant.sourceforge.net,window=_blank])
+ pour télécharger et installer l'Outil de script
+approprié.
+
+[NOTE]
+====
+L'installation de l'Agent peut être lancée sans Outil de script
+installé sur la Machine Cible. Une fois l'Agent installé et en cours
+d'exécution, vous pouvez toujours installer et configurer un Outil de
+script.
+====
+
+== Installation de l'Agent IKAN ALM via l’application WEB
+
+L’installation de l’Agent IKAN ALM peut être configurée, démarrée et
+gérée à partir de l’Interface Utilisateur de l’application Web IKAN ALM.
+Après avoir créé la définition de la Machine dans l’_Administration
+Globale_, une fonctionnalité d’_Installation_ est disponible dans le
+panneau de l’_Administration Globale > Machines > Aperçu_. En la
+sélectionnant, l’Interface Utilisateur de _Configuration de
+l’installation_ de l’Agent s’ouvre. Après avoir configuré les détails
+d’installation de *Configuration Générale* et *SecureShell* ou
+*PowerShell*, l’installation de l’Agent peut être démarrée et suivie sur
+ce panneau. Selon le type de connexion choisi, le serveur IKAN ALM
+automatisera les étapes suivantes via *SecureShell* ou exécutera des
+scripts *PowerShell* qui agissent sur la Machine (distante) de l’Agent :
+
+
+. Création d’un répertoire temporaire sur le serveur IKAN ALM, copie des
+fichiers d’installation de l’Agent configurables et remplacement des
+variables dans les fichiers d’installation
+. Création d’un dossier de distribution de l’Agent sur la Machine
+distante
+. Copie du fichier de distribution compressé de l’Agent, une archive
+Apache ANT compressée et les fichiers d’installation de l’Agent (script
+et propriétés Apache ANT, fichiers cmd et shell) dans le dossier de
+distribution de l’Agent.
+. Lancement d’une invite cmd ou shell qui :
+.. Vérifie le JAVA_HOME sur la Machine de l’Agent
+.. Décompresse l’archive Apache ANT copiée
+.. Démarre un script ANT principal qui exécutera les étapes 5 à
+13 sur la Machine de l’Agent
+. Script ANT : Détecte les détails du Système d’exploitation de la
+nouvelle Machine de l’Agent. Cela est nécessaire pour (dés)installer des
+services ou des démons. Actuellement Windows, plusieurs versions Linux
+et AIX sont pris en charge. Pour les versions Linux Redhat et Debian,
+les Systemd et SystemV sont pris en charge.
+. Script ANT : Décompresse la distribution de l’Agent
+. Script ANT : Copie les propriétés d’installation et les fichiers cmd
+ou shell
+. Script ANT : Arrête le service ou le démon de l’Agent IKAN ALM s’il
+est en cours d’exécution
+. Script ANT : Désinstalle l’Agent IKAN ALM précédent si demandé
+. Script ANT: Installe le nouvel Agent IKAN ALM. Il démarrera un script
+ANT (différent), qui fonctionne de la même manière que l’installation de
+l’Agent IKAN ALM via la console.
+. Script ANT : Enregistre l’Agent IKAN ALM en tant que service Windows
+ou démon Linux
+. Script ANT : Démarre le service ou le démon enregistré
+. Script ANT : Nettoie les répertoires temporaires
+. Enfin, suppression des fichiers qui ont été copiés à l’étape 3. Cette
+action s’exécute toujours, même si certaines des étapes précédentes ont
+échoué, ou si l’installation a été annulée ou abandonnée.
+
+Avant de pouvoir démarrer l’installation, les champs *Configuration
+Générale* et les paramètres de connexion *SecureShell* ou *PowerShell*
+doivent être renseignés.
+
+====
+Dans le contexte d’Administration Globale, sélectionner *_Machines>Aperçu_*
+
+Cliquez sur le lien image:icons/image2.png[,16,16] *_Install_* de la Machine du panneau *_Aperçu des Machines_* où vous voulez installer l’Agent.
+
+Remplissez les champs du panneau *_Configuration de l’Installation_*.
+Les champs marqués avec un astérisque rouge sont obligatoires.
+====
+
+Si l’option _"Afficher l’Aide du Formulaire"_ est activée, une
+description en ligne s’affiche pour chacun des champs.
+
+
+=== Champs de la Configuration Générale
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+|Champ 
+|Explication
+
+|Chemin Java 
+|Emplacement de la machine virtuelle Java (JVM) utilisée pour lancer
+l’Agent. Il doit s’agir d’un JDK Java 11.
+
+Par exemple: `D:/java/jdk11.0.10` ou `/usr/lib/jvm/java-11-openjdk`
+
+*Remarque*: Sur les systèmes Unix ou Linux, spécifiez le chemin de
+l’installation Java réel (et non vers un lien symbolique), car
+l’installation vérifiera l’existence de fichiers jar spécifiques dans le
+chemin fourni.
+
+|Chemin d'Installation de l'Agent 
+|Il s’agit de l’emplacement où l’agent sera installé, par exemple,
+`/opt/ikan/alm` ou `C:/alm`.
+
+Plus loin dans ce guide, nous nous référerons à cet endroit avec le nom
+ALM_HOME.
+
+|Chemin de Distribution de l'Agent 
+|Emplacement sur la Machine de l’Agent où les fichiers d’installation
+doivent être copiés. Par exemple distribution, `/opt/ikan/agentdistro` ou
+`C:/ikan/alm/agent`
+
+Après une installation réussie, les fichiers d’installation utilisés
+seront stockés dans un sous-répertoire _courant_ de cet emplacement.
+
+|Communication sécurisée entre le Serveur et l'Agent 
+|Option pour
+spécifier une communication sécurisée entre le Serveur et l’Agent IKAN
+ALM.
+
+|Port de l'Agent 
+|Facultatif, valeur par défaut de la définition de la Machine.
+
+Port sur lequel l’Agent sera à l’écoute. La valeur par défaut est "20020".
+
+Si vous modifiez cette valeur, vous devrez également modifier la
+propriété "Port de l’Agent" de la Machine représentant cet Agent dans
+l’interface graphique IKAN ALM.
+
+|Nom du Serveur 
+|Facultatif, valeur par défaut de la définition de la Machine.
+
+Nom d’hôte (ou adresse IP) de la Machine du Serveur IKAN ALM.
+
+L’Agent essaiera de se connecter au Serveur à l’aide de ce nom ou de
+cette adresse IP.
+
+Accédez à _Administration globale > Paramètres Système_
+
+_Environnement local_ du panneau: la valeur de "Serveur IKAN ALM"
+représente la Machine du Serveur IKAN ALM.
+
+|Port du Serveur 
+|Facultatif, valeur par défaut de la définition de la Machine.
+
+Port sur lequel le Serveur IKAN ALM sera à l’écoute.
+
+L’Agent essaiera de se connecter au Serveur sur ce port. Le paramètre
+peut être vérifié dans l’Administration Globale IKAN ALM :
+
+Accédez _à Administration Globale > Machines > Aperçu_
+
+Vérifiez la propriété "Port du serveur" de la Machine Serveur IKAN
+ALM. Si aucun Port du Serveur n’est défini sur la Machine Serveur IKAN
+ALM, le port 20021 sera utilisé.
+
+|Nom d'hôte de l'Agent 
+|Optionnel. 
+
+Laissez ce champ vide, sauf, si vous souhaitez remplacer le nom d’hôte
+détecté automatiquement de l’Agent. 
+
+Par exemple, pour utiliser un nom de domaine complet comme
+`almAgent.your.domain` pour communiquer avec le Serveur IKAN ALM. Il est
+important que le nom d’hôte entré ici corresponde au nom DHCP de la
+Machine Agent (dans l’interface graphique IKAN ALM).
+
+|Adresse IP de l'Agent 
+|Optionnel. 
+
+Laissez ce champ vide, sauf, si vous souhaitez remplacer l’adresse IP
+détectée automatiquement de l’Agent.
+
+Par exemple, pour utiliser une adresse IP qui diffère de l’adresse IP
+interne pour communiquer avec le Serveur IKAN ALM. Il est important que
+l’adresse IP entrée ici corresponde à l’adresse IP de la Machine Agent
+(dans l’interface graphique IKAN ALM).
+|===
+
+Les trois premiers champs suivants sont les numéros de port spécifiques
+du conteneur Karaf hébergeant le démon de l’Agent IKAN ALM. Normalement,
+il n’est pas nécessaire de modifier ces numéros de port, sauf si vous
+avez des conflits de port. Pour plus d’informations, reportez-vous à la
+documentation Karaf container 4.0: https://karaf.apache.org/manual/latest/#_instances[https://karaf.apache.org/manual/latest/#_instances,window=_blank]
+
+ 
+[cols="1,1", frame="topbot", options="header"]
+|===
+|Field 
+|Explanation
+
+|Port de Karaf RMI Registry 
+|Port de Karaf RMI Registry de l’Agent
+
+La valeur par défaut est “1099”.
+
+|Port de Karaf RMI Server 
+|Port de Karaf RMI Server de l’Agent
+
+La valeur par défaut est “44444”.
+
+|Port de Karaf SSH 
+|Port de Karaf SSH de l'Agent.
+
+La valeur par défaut est “8101”.
+
+|Chemin du journal Karaf 
+|Le chemin relatif du journal Karaf de l'Agent IKAN ALM.
+
+Ce paramètre est utilisé par le Serveur IKAN ALM lors de l’affichage de
+la _Trace de la Machine_ d’un Agent sur l’écran _Statut détaillé de la
+Machine_.
+
+|Exécuter la Désinstallation de l'Agent 
+|Option indiquant si le processus de désinstallation doit s’exécuter en
+premier pour désinstaller l’Agent IKAN ALM précédemment installé.
+
+La valeur par défaut est “Oui”.
+
+|Chemin du programme de désinstallation 
+|Optionnel.
+
+Emplacement du programme de désinstallation "Uninstaller" des Agents
+installés manuellement.
+
+Il n’est pas nécessaire de définir cette valeur pour les agents qui ont
+été installés à l’aide de cette page.
+
+Vous devez définir cette option si vous souhaitez que la procédure
+d’installation désinstalle automatiquement un Agent précédemment
+installé manuellement. Par exemple, si un Agent ALM 5.8 a été installé à
+l’aide du programme d’installation de la console, vous devez définir ce
+champ avec l’emplacement de ce programme d’installation de la console,
+comme `C:/ikan/install/IKAN_ALM_5.8_console`.
+
+La procédure d’installation détecte la version de l’Agent, arrête et
+supprime l’ancien service de l’Agent. Notez que cela ne fonctionnera que
+si le service de l’Agent a été installé à l’aide de son nom de service
+par défaut.
+
+|Délai d'expiration pour arrêter/démarrer l'Agent |Délai d’expiration en
+secondes pour attendre l’arrêt ou le démarrage du service de l’Agent.
+
+|Type de Connexion 
+|Type de connexion entre le Serveur IKAN ALM et la Machine cible de
+l’Agent. Les options possibles sont SSH (SecureShell) ou PowerShell.
+
+Une fois que vous avez sélectionné le type de connexion, le panneau
+_SecureShell_ ou _PowerShell_ approprié s’affiche en dessous.
+|===
+
+=== Champs de la Connexion
+
+Selon le type de connexion choisi, remplissez les champs dans le panneau
+SecureShell ou PowerShell. Les champs marqués d’un astérisque rouge sont
+obligatoires :
+
+==== SecureShell
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+|Champ
+|Explication
+
+|Nom d'hôte SSH
+|Optionnel.
+
+Nom d’hôte utilisé lors de l’établissement d’une connexion SSH avec la
+Machine de l’Agent. Laissez ce champ vide, sauf, si vous souhaitez
+remplacer le nom d’hôte ou l’adresse IP de la définition de la Machine
+de l’Agent.
+
+|Port
+|Port SSH de l'Agent. La valeur par défaut est 22.
+
+|Type d'authentification
+a|Sélectionnez le type d’authentification requis. Options disponibles :
+
+* Nom/Mot de passe
+* Clé d'authentification
+
+|Nom d'utilisateur
+|Nom d'utilisateur SSH pour l'authentification Nom/Mot de passe. Notez
+que cet utilisateur sera également utilisé pour enregistrer le démon de
+l’Agent sur les machines Linux et Unix.
+
+|Mot de passe
+|Mot de passe SSH requis pour l'authentification Nom/Mot de passe
+
+|Répétez le mot de passe
+|Répétez le mot de passe pour l'authentification Nom/Mot de passe.
+
+|Chemin du fichier des clés
+|Emplacement du fichier des clés SSH requis pour l'authentification par
+Clé.
+
+|Phrase de passe
+|Phrase de passe SSH optionnelle pour l'authentification par Clé.
+
+|Répétez la Phrase de passe
+|Répétez la Phrase de passe SSH pour l'authentification par Clé.
+
+|Type de Shell
+a|Type de Shell de la Machine de l'Agent. Différents processus seront
+exécutés en fonction du type d’environnement de la ligne de commande.
+Options disponibles :
+
+* CMD (Windows)
+* PowerShell (Windows)
+* Bash (Linux and Unix)
+
+|Délai d'expiration
+|Délai d'expiration en secondes pour l'établissement d'une connexion SSH.
+La valeur par défaut est 20 secondes.
+|===
+
+==== PowerShell
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+|Champ
+|Explication
+
+|Nom d'hôte
+|Optionnel.
+
+Nom d’hôte utilisé pour des commandes PowerShell distantes sur la
+Machine de l’Agent. Laissez ce champ vide, sauf, si vous souhaitez
+remplacer le nom d’hôte ou l’adresse IP de la définition de la Machine
+de l’Agent.
+
+|Nom d'utilisateur
+|Nom d’utilisateur utilisé pour des commandes PowerShell distantes sur la
+Machine de l’Agent.
+
+|Mot de passe
+|Mot de passe utilisé pour des commandes PowerShell distantes sur la
+Machine de l’Agent.
+
+|Répétez le mot de passe
+|Répétez le mot de passe utilisé pour des commandes PowerShell distantes
+sur la Machine de l’Agent.
+
+|Nom de l'Exécutable
+|Optionnel.
+
+Exécutable PowerShell. Lorsque la valeur est laissée vide, l'exécutable
+utilisé par défaut est powershell.exe.
+
+|Chemin de l'Exécutable
+|Optionnel.
+
+Chemin d’accès à l’exécutable. Lorsqu’il est laissé vide, on suppose que
+l’exécutable PowerShell est présent dans la variable PATH. +
+Exemple: `C:/Program Files/Powershell7.0.3/7`
+
+|Délai d'expiration
+|Optionnel.
+
+Délai d’expiration en secondes après lequel le processus PowerShell sera
+arrêté de force.
+|===
+
+[WARNING]
+====
+Consultez la section Configuration requise (2.3) avec quelques détails
+sur la connexion SSH et PowerShell.
+====
+
+====
+Dès que vous avez rempli les champs marqués comme requis, cliquez sur
+*_Enregistrer_*.
+====
+
+Si l’action réussit, vous pouvez continuer et exécuter le programme
+d’Installation de l’Agent.
+
+=== Exécution de l’Installation de l’Agent
+
+====
+Démarrez l’installation en cliquant sur le bouton *_Installer_* dans le
+panneau *_Informations de la machine_*.
+====
+
+La configuration de l’installation sera validée. Lorsque qu’elle est
+correcte, la fenêtre contextuelle _Confirmer l’Installation de l’Agent_
+s’affiche.
+
+image::image4.png[,309,121]
+
+====
+Cliquez sur *_Démarrer l’Installation_* pour démarrer l’Installation de
+l’Agent.
+====
+
+L’Installation de l’Agent sera démarrée par le Serveur IKAN ALM. Les
+différentes étapes d’installation seront exécutées comme décrit dans
+l’introduction de ce chapitre. Le processus sera enregistré dans le
+panneau _État de l'Installation de l'Agent_. Son état passe de
+_Aucune Installation en cours_ à _Installation en cours_.
+
+image::image5.png[,620,305]
+
+Vous pouvez activer l’option _Actualisation automatique_, elle vous
+permet de suivre les étapes d’exécution de l’Installation de l’Agent.
+Une fois l’installation terminée, la fonction d’_Actualisation
+automatique_ sera arrêtée automatiquement.
+
+Vous pouvez interrompre le processus d’installation en cliquant sur le
+bouton *_Abandonner_* sous le panneau *_État d’Installation de
+l’agent_*.
+
+La fenêtre contextuelle _Confirmer l'interruption de l'Installation_
+s’affiche.
+
+image:image6.png[,310,145]
+
+====
+Cliquez sur Abandonner pour abandonner l’Installation de l’Agent,
+définitivement.
+====
+
+Le Serveur IKAN ALM essaiera d’annuler l’installation pendant
+l’exécution. Lorsque vous sélectionnez l’option *_Forcer l'interruption
+immédiate_*, le Serveur arrête brusquement les processus en cours
+d’exécution.
+
+Une fois l’installation terminée, la valeur du panneau *_État de
+l’Installation de l’Agent_* devient _Aucune installation en cours_
+d’exécution.
+
+Vérifiez le _Journal de l’Installation_ pour voir si l’Installation a
+réussi. Selon l’option _Exécuter la Désinstallation de l'Agent_, vous
+devriez voir plusieurs messages "BUILD SUCCESSFUL" dans le journal.
+Ci-dessous une capture d’écran d’une Installation réussie avec une
+connexion PowerShell:
+
+image:image7.png[,621,354]
+
+Vous pouvez vérifier l’Activité de l’Agent nouvellement installé et
+vérifier s’il s’exécute correctement.
+
+====
+Sélectionnez le bouton *_Précédent_* dans le panneau *_Informations de la 
+machine_*.
+====
+
+Vous retournerez à l’écran _Aperçu des machines_.
+
+====
+Cliquer le lien image:icons/image8.png[,14,14] *_Statut_* de l’Agent nouvellement installé sur le panneau d’*_Aperçu des Machines._*
+====
+
+La page _Statut détaillé de la Machine_ s’affiche et vous pouvez
+vérifier l’_Activité actuelle_ et la _Trace de la machine._
