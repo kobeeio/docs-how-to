@@ -6,9 +6,9 @@ Always consult the "antora.yml" file in the document to verify, it should contai
 
 **Documents in this repository**
 
-* how-to-agentinstall 5.8
-* how-to-tomcatinstall 5.8
-* how-to-ui-agentinstall 5.9
+* how-to-agentinstall 5.8(EN) & 5.8(FR)
+* how-to-tomcatinstall 5.9(EN) & 5.8(FR)
+* how-to-ui-agentinstall 5.9(EN) & 5.9(FR)
 
 
 # Important on new versions
