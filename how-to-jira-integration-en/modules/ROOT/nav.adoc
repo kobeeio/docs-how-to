@@ -1,0 +1,2 @@
+* xref:HowTo_Jira.adoc[Contents]
+* xref:HowTo_Jira_appendices.adoc[Appendices]

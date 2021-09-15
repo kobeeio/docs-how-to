@@ -1,0 +1,6 @@
+name: how-to-jira-integration-en
+title: Jira integration How-to
+version: '5.7'
+start_page: ROOT:HowTo_Jira.adoc
+nav:
+- modules/ROOT/nav.adoc  

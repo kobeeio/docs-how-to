@@ -1,0 +1,394 @@
+// The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
+:imagesdir: ../images
+:description: Jira Installation How-to (French)
+:revnumber: v5.7
+:revdate: 17.05.2016
+
+= Guide pratique pour l'intégration de Jira avec IKAN ALM
+
+[[_introduction]]
+== Introduction
+
+La fonctionnalité de Suivi des Incidents d'IKAN ALM permet de relier des Incidents d'un Système de Suivi des Incidents externe à une Requête de Niveau IKAN ALM.
+
+Les Incidents peuvent être reliés à une Requête de Niveau selon l'une des manières suivantes:
+
+* via une recherche automatique d'Incidents traités dans les commentaires fournis par les développeurs lors des processus d'enregistrement (commit) et de chargement (check in) des codes Sources dans le RCV. Cette recherche automatique se fait dans une phase séparée pendant l'exécution d'une Requête de Niveau de Construction et se base sur une expression régulière décrivant le format du numéro de l'Incident. Pour le moment, cela n'est supporté que pour les Référentiels de contrôle de version Subversion, Git, Team Foundation et CVS..
+* via l'énumération des Incidents résolus au moment de délivrer vers les Niveaux de Test/Production, facilitant ainsi la génération de Notes de Réalisation.
+* en ajoutant manuellement l'Incident à une Requête de Niveau réussie dans l'écran __Informations détaillées__.
+
+
+[NOTE]
+====
+Un lien permettant de passer directement de l'Incident dans IKAN ALM vers l'Incident dans l'outil de Suivi des Incidents externe est disponible si l'outil externe dispose d'une interface Web.
+====
+
+En plus de cette fonctionnalité de Suivi des Incidents de base, IKAN ALM offre une intégration plus avancée pour Atlassian Jira, Microsoft Team Foundation Server (TFS), HP Quality Center et CollabNet TeamForge avec les fonctionnalités additionnelles suivantes:
+
+* la possibilité de tester la connexion avec le Système de Suivi des Incidents au moment de la création ou de la modification d'une définition de Système de Suivi des Incidents.
+* la synchronisation automatique des incidents traités dans le Système de Suivi des Incidents: IKAN ALM récupère des informations additionnelles, telles que la description, le propriétaire, la priorité, ... de l'Incident Jira, de l'élément de travail Team Foundation, du Defect HP Quality Center ou de l'Artefact TeamForge correspondant. Ces informations seront synchronisées chaque fois que le résultat de construction évoluera dans le Cycle de Vie IKAN ALM.
+* synchronisation manuelle des Incidents associés à une Requête de niveau dans l'onglet "Incidents" de la fenêtre __Informations détaillées__.
+* possibilité d'ajouter automatiquement un commentaire pour un incident/defect/artefact dans Jira/TFS/HP Quality Center/TeamForge après une Requête de niveau réussie. Ce commentaire contiendra un lien vers la Requête de Niveau en IKAN ALM.
+
+Dans ce document nous nous concentrerons sur la façon d'effectuer l'intégration de Jira avec IKAN ALM.
+D'abord, nous décrirons comment il faut configurer Jira pour qu'IKAN ALM puisse s'y connecter.
+Après, nous expliquerons comment créer un Système de Suivi d'incidents représentant votre système Jira dans IKAN ALM.
+Ensuite, nous décrirons les étapes à suivre pour activer l'intégration Jira dans un Projet IKAN ALM.
+Finalement, nous donnerons des informations de référence sur l'intégration d'IKAN ALM avec des Systèmes de Suivi des Incidents en général.
+
+
+[[_jira_configurationprerequisites]]
+== Configuration Jira et prérequis
+
+=== Versions Jira supportées
+
+Pour le moment, IKAN ALM peut s'intégrer avec les versions 5.x ou supérieure de Jira.
+
+=== Activer l'option "Accepter lesappels API distants"
+
+IKAN ALM utilise REST pour se connecter à Jira.
+
+Pour le bon fonctionnement de l'intégration, les appels API distants doivent être activés.
+Vous pouvez vérifier cela comme suit:
+
+. Connectez-vous à Jira avec des droits d'accès d'Administrateur.
+. Naviguez vers _Administration > Configuration générale_  et assurez-vous que l'option _Accepter les appels API distants_ est établie à __OUI__. 
++
+image::fig2-1.png[,358,278] 
+
+
+=== Vérifier le contexte de Jira dans Tomcat
+
+Dans le fichier ``JIRA_HOME/conf/server.xml``, vous pouvez spécifier le chemin de contexte de l'application Web Jira.
+
+Par exemple: 
+
+`<Context docBase="${catalina.home}/atlassian-jira" path="/jira" reloadable="false" useHttpOnly="true">`
+
+Dans cet exemple, le chemin de contexte est `"/jira"`.
+
+[NOTE]
+====
+Notez que ce paramètre influence les valeurs du champ "URL complet" et de la propriété "jiraRESTUrl" d'un Système de Suivi des Incidents IKAN ALM.
+
+Par exemple, si vous spécifiez "/jira" comme chemin, la valeur du champ "URL complet" sera mise à "http(s)://<host>:<port>/jira/browse/${issueId}".
+====
+
+
+[[_creatissuetrackingsystem]]
+== Créer un Système de Suivi des Incidents dans IKAN ALM
+
+Dans IKAN ALM, vous devez d'abord créer le Système de Suivi des Incidents qui représente votre système Jira avant que vous ne puissiez l'assigner et l'utiliser dans un Projet IKAN ALM.
+
+. Connectez-vous comme Administrateur IKAN ALM et sélectionnez _Administration globale > Suivi des Incidents > Créer un Système de Suivi_ des Incidents.
++
+L'écran suivant s'affiche:
++
+image::fig3-1.png[,641,419] 
+
+. Complétez les champs dans le panneau __Créer un Système de Suivi des Incidents__. Les champs marqués d'un astérisque sont obligatoires.
++
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+| Champ
+| Description
+
+|Nom
+|Le nom du Système de Suivi des Incidents, comme par exemple "Jira"
+
+|Description
+|Une description significative, comme par exemple "Système de Suivi des Incidents Jira sur le Serveur X"
+
+|Classe «Plugin Factory» 
+|Le nom complet de la Classe Java qui peut produire des implémentations de l'extension de Système de Suivi des Incidents IKAN ALM.
+
+Vous pouvez sélectionner une des valeurs de la liste ou saisir votre propre nom de Classe 
+(<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Associer un système Jira à un Système de Suivi des Incidents IKAN ALM>>).
+
+Pour Jira, sélectionnez "be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory"
+
+|URL complet
+|L'URL direct vers les détails d'un seul Incident.
+Dans cet URL, la clé de l'Incident est représentée par la variable ${issueId}.
+
+Cette valeur dépend des paramètres spécifiés dans votre système Jira ainsi que de la stratégie que vous utilisez pour associer un système Jira à un Système de Suivi des Incidents IKAN ALM (<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Associer un système Jira à un Système de Suivi des Incidents IKAN ALM>>).
+
+Voici quelques exemples de valeurs:
+
+http(s)://<host>:<port>/jira/browse/${issueId}
+
+http(s)://<host>:<port>/browse/${issueId}
+
+http(s)://<host>:<port>/browse/PROJECTKEY-${issueId}
+
+|Utilisateur
+|L'Utilisateur Jira utilisé par IKAN ALM pour se connecter à Jira
+
+|Mot de passe
+|Le Mot de passe de l'utilisateur Jira utilisé par IKAN ALM pour se connecter à Jira
+
+|Modèle de recherche de Suivi d'Incident et Modèle d'Identifiant de Suivi d'Incident
+a|Ces deux champs doivent contenir une expression régulière qu'IKAN ALM utilisera pour trouver les clés d'incidents dans les messages saisis lors de l'enregistrement dans le RCV.
+Le Modèle de recherche de Suivi d'Incident sert à retrouver une référence vers un Incident dans le texte enregistré.
+Le Modèle d'Identifiant de Suivi d'Incident sert à retrouver l'identifiant de l'Incident (ou la clé) dans la référence de l'Incident correspondant.
+En général, on ne fait pas de distinction entre les deux modèles et les deux auront la même valeur.
+
+Quelques exemples:
+
+* Les deux modèles sont spécifiés comme "[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+" (recommandé): une référence d'Incident est composée de minimum 2 lettres en majuscules ou 2 chiffres, suivis d'un tiret (-), suivi de minimum 1 chiffre. L'entièreté de cette référence forme l'identifiant (la clé) d'un Incident. Exemples de correspondances: ABC-123, AD-1, PROJECT1-1452
+
+* Les deux modèles sont spécifiés comme "PROJKEY-[0-9]+": une référence d'Incident est composée de la chaîne de caractères "PROJKEY", suivie d'un tiret (-) et de 1 ou plusieurs chiffres. L'entièreté de cette référence forme l'identifiant (la clé) d'un Incident. Exemples de correspondances PROJKEY-1, PROJKEY-135. Comme vous pouvez le constater, le résultat ne contient que les Incidents pour le Projet Jira.
+
+// Comment: Used backslashes for the special characters, asterisk, plus...
+* AVANCÉ: Le Modèle de recherche de Suivi est spécifié comme "([0-9A-Z][0-9A-Z][0-9A-Z]\*-[0-9]\+)(,[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+)\*" et le Modèle d'identifiant de Suivi d'Incident est spécifié comme "[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+": une référence d'Incident est composée de la chaîne de caractères "Issues", suivie d'une liste d'identifiants d'Incidents séparés par une virgule. L'identifiant d'un Incident est composé de minimum 2 lettres en majuscules ou chiffres, suivis d'un tiret (-), suivi de minimum 1 chiffre. Donc, pour un message d'enregistrement suivant: "Résolution des Incidents suivants: WEB-1,WEB-2,WEB3", la référence d'Incident correspondante sera: "Issues: WEB-1,WEB-2,WEB-3" et les identifiants d'Incidents correspondants sont WEB-1, WEB-2, et WEB-3
+
+|Ajouter des Commentaires
+|Si vous établissez cette option à "Oui", IKAN ALM ajoutera un commentaire Jira à l'Incident au moment où il est associé à une Requête de niveau IKAN ALM.
+Des explications plus détaillées suivront plus loin dans ce document.
+|===
+
+. Après avoir complété les champs, cliquez sur le bouton __Créer__.
++
+Vous serez réorientés vers l'__Aperçu des Systèmes
+de Suivi des Incidents__ et un avertissement s'affichera en haut de la fenêtre:
++
+image::fig3-2.png[,527,57] 
++
+Cet avertissement s'affiche parce l'extension du Système de Suivi des Incidents Jira requiert que la propriété suivante soit spécifiée: jiraRESTUrl.
+Elle représente l'URL de l'API Jira REST et IKAN ALM en a besoin pour établir la connexion avec Jira.
+
+. Cherchez le Système de Suivi des Incidents que vous venez de créer et cliquez sur le lien image:icons/edit.gif[,15,15] _Modifier_ pour afficher la fenêtre _Modifier un Système de Suivi des Incidents_ et sélectionnez le lien __Modifier les Propriétés__.
++
+image::fig3-3.png[,1035,378] 
+
+. Ensuite, cliquez sur le lien image:icons/icon_createparameter.png[,15,15]  "Créer".
+
+. Spécifiez la valeur de l'URL de l'API Jira REST.
++
+image::fig3-4.png[,716,452] 
++
+Les valeurs valides dépendent des paramètres de votre système Jira.
+Elles sont étroitement liées à la valeur du champ "URL complet" du Système de Suivi des Incidents. 
++
+Quelques exemples de valeurs:
+
+* http://<host>:<port>/jira/rest
+* https://<host>:<port>/rest
+
+. Cliquez sur le bouton _Créer_ pour confirmer la création de la Propriété.
+
+. Cliquez sur le bouton _Précédent_ pour retourner à l'aperçu.
++
+Cherchez le Système de Suivi des Incidents que vous venez de créer et cliquez sur le lien image:icons/edit.gif[,15,15] __ Modifier__.
++
+L'avertissement concernant la valeur manquante devra avoir disparu.
++
+image::fig3-5.png[,634,543] 
+
+. Testez la connexion avec votre système Jira en cliquant sur le bouton __Vérifier la connexion__.
++
+Si le test échoue, corrigez les erreurs spécifiées dans la trace de pile et refaites le test.
++
+Le Système de Suivi des Incidents Jira étant défini, nous pouvons l'utiliser dans nos projets IKAN ALM.
+Pour cela, nous devons associer le Système de Suivi des Incidents à un Projet.
+
+
+[[_linkissuetrackingsystem]]
+== Associer un Système de Suivi des Incidents à un Projet
+
+. Connectez-vous comme un Utilisateur IKAN ALM avec des droits d'accès d'Administrateur sur le Projet que vous voulez y associer.
+
+. Naviguez vers _Administration des projets_ et sélectionnez le Projet approprié dans l'__Aperçu des Projets__.
+
+. En-dessous du panneau __Infos Projet:__, cliquez sur le bouton __Modifier__.
+
+. Dans le champ "Système de Suivi des Incidents", sélectionnez le Système de Suivi des Incidents créé à partir du menu déroulant et cliquez sur le bouton __Enregistrer__.
++
+image::fig4-1.png[,623,763] 
++
+Ensuite, nous devons ajouter la Phase "Suivi des Incidents" à chaque Niveau existant.
+Cela est essentiel car toutes les opérations concernant le Suivi des Incidents effectuées par IKAN ALM sont exécutées pendant la Phase "Suivi des Incidents". Si un Niveau n'a pas de Phase "Suivi des Incidents", aucun Incident ne sera associé aux Requêtes de niveau de ce Niveau et aucun commentaire ne sera ajouté aux Incidents!
+
+. Pour chaque Niveau existant dans le Projet, vous devez effectuer ce qui suit:
++
+
+[NOTE]
+====
+Vous ne devez exécuter cette procédure que pour les Niveaux créés avant l'association du Projet au Système de Suivi des Incidents.
+Les Niveaux créés après l'association au Système de Suivi des Incidents auront par défaut une Phase "Suivi des Incidents". 
+====
++
+
+.. Modifiez le Niveau, soit à partir de l'__Aperçu des Niveaux__, soit à partir de la fenêtre __Aperçu des Cycles de vie__.
++
+image::fig4-2.png[,946,435] 
+
+.. Ensuite, cliquez sur le lien image:icons/edit_phases.gif[,15,15] _ Modifier les Phases_ en-dessous de l'__Aperçu des Phases__.
++
+image::fig4-3.png[,562,453] 
+
+.. Ensuite, cliquez sur le lien __Insérer une Phase__.
++
+La fenêtre _Insérer une Phase_ s'affiche.
++
+image::fig4-4.png[,1042,679] 
+
+.. Complétez les champs pour la nouvelle Phase.
++
+Les champs suivants sont disponibles:
++
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+| Champ
+| Description
+
+|Phase
+|Sélectionnez, à partir du panneau __Phases disponibles__, la Phase de niveau à ajouter.
+
+|Abandon si erreur
+|Dans ce champ, indiquez si la Requête de Niveau doit être considérée comme étant échouée si la Phase rencontre une erreur.
+
+|Insérer à la position
+|Ce champ indique la position dans le flux de travail du Niveau à laquelle la Phase sera insérée.
+La position de la Phase est également affichée dans le panneau __Aperçu
+des Phases__.
+Une bonne pratique consiste à insérer la Phase _Suivi
+des Incidents_ avant la Phase __Nettoyage Copies
+de travail__.
+
+|Phase suivante si erreur
+|Ce champ indique la Phase suivante à exécuter si la Phase rencontre une erreur.
+Il est recommandé de sélectionner la Phase __Nettoyage Copies
+de travail__.
+
+|Libellé
+|Dans ce champ vous pouvez saisir un libellé pour la Phase à insérer.
+
+Si vous utilisez la même Phase plusieurs fois, il est utile d'ajouter un libellé pour donner des informations additionnelles concernant l'usage de la Phase.
+|===
+
+.. Cliquez sur le bouton _Insérer_ pour confirmer la création de la nouvelle Phase.
+
+
+[[_integration]]
+== Intégrer un Système de Suivi des Incidents externe 
+
+Cette section contient des informations détaillées sur l'intégration d'IKAN ALM avec un Système de Suivi des Incidents externe.
+Plus spécifiquement, elle décrit les tâches exécutées par la Phase "Suivi des Incidents" IKAN ALM qui est exécutée pendant une Requête de niveau.
+
+=== Journal de la Phase Suivi des Incidents
+
+Comme déjà indiqué précédemment, toutes les opérations concernant le Suivi des Incidents sont exécutées pendant la Phase "Suivi des Incidents". Les fichiers journaux générés lors de ces opérations peuvent être consultés dans l'interface utilisateur IKAN ALM, sur l'onglet "Journaux de Phase" de la page __Informations détaillées__.
+
+image::fig5-1.png[,927,813] 
+
+Le champ "Dernier message" contient le messages de suivi des opérations exécutées par la Phase "Suivi des Incidents".
+
+=== Requêtes de niveau de Construction
+
+Une Requête de niveau de Construction est une Requête de niveau d'un Niveau de Construction.
+Typiquement, une Requête de niveau de Construction récupérera le dernier Code Source du RCV (Référentiel de Contrôle de Version), le construira et y ajoutera un libellé dans le RCV pour des références ultérieures.
+
+La Phase "Suivi des Incidents" dans une Requête de niveau de Construction exécute les opérations suivantes:
+
+* analyser les messages d'enregistrement dans le RCV et trouver les références aux Incidents,
+* créer un lien entre les Incidents identifiés et la Requête de niveau,
+* synchroniser les données des Incidents associés avec les informations les plus récentes dans Jira.
+
+
+Tout d'abord, les messages sont récupérés à partir des enregistrements effectués depuis la dernière Requête de niveau réussie.
+Dans ces messages, les identifiants (les clés) des Incidents sont cherchés en utilisant les modèles définis dans le Système de Suivi d'incidents (les champs Modèle de recherche de Suivi d'Incident et Modèle d'Identifiant de Suivi d'Incident). La reconnaissance des correspondances ne tient pas compte de la casse. 
+
+Les doubles parmi les incidents trouvés sont retirés et ils sont associés à la Requête de niveau actuelle.
+
+Finalement, IKAN ALM essaie de trouver la correspondance de l'Incident dans le référentiel Jira.
+Si l'Incident est trouvé, la description, le statut, le propriétaire et la priorité sont récupérés à partir de Jira, et cette information est sauvegardée dans la représentation de l'Incident dans IKAN ALM.
+
+=== Requêtes de niveau pour délivrer, re-délivrer etrestaurer
+
+Si vous créez une Requête de niveau pour un Niveau de Test ou de Production, cela signifie, en termes IKAN ALM, que vous "délivrez" vers un Niveau de Test ou de Production.
+La "Construction active actuelle" d'un Niveau est la dernière Construction délivrée réussie sur ce Niveau. 
+
+Nous parlons d'une "Requête de niveau pour délivrer une Construction" si vous délivrez une Construction dont le numéro de construction est supérieur à celui de la Construction active actuelle sur ce Niveau. 
+
+Nous parlons d'une "Requête de niveau pour re-délivrer une Construction" si vous délivrez une Construction dont le numéro de construction est égal à celui de la Construction active actuelle sur ce Niveau. 
+
+Nous parlons d'une "Requête de niveau pour restaurer une Construction" si vous délivrez une Construction dont le numéro de construction est inférieur à celui de la Construction active actuelle sur ce Niveau. 
+
+La Phase "Suivi des Incidents" dans une Requête de niveau pour délivrer une Construction exécute les opérations suivantes: 
+
+* Trouver les Incidents associés aux Requêtes de niveau de Construction exécutées depuis la dernière Requête de niveau pour délivrer une Construction
+* Créer un lien entre toutes ces Requêtes de niveau de Construction vers la Requête de niveau pour délivrer une Construction actuelle, en éliminant les doubles
+* Synchroniser les données des Incidents associés avec les informations les plus récentes dans Jira.
+
+
+En cas d'une Requête de niveau pour re-délivrer ou restaurer une Construction, il existe toujours une Requête de niveau pour délivrer une Construction précédente.
+Au lieu d'énumérer toutes les Requêtes de niveau de Construction, les Incidents sont copiés à partir de la Requête de niveau pour délivrer une Construction précédente, et, finalement, leurs données sont synchronisées avec l'information la plus récente disponible dans Jira.
+
+Il est important de comprendre que pour les Requêtes de niveau pour délivrer, re-délivrer et restaurer une Construction, les Incidents sont toujours associés en les "copiant" d'autres Requêtes de niveau, soit des Requêtes de niveau de Construction, soit d'autres Requêtes de niveau pour délivrer une Construction.
+Les Incidents ne sont jamais analysés sur la base des messages d'enregistrement pendant l'exécution de Requêtes de niveau pour délivrer, re-délivrer ou restaurer une Construction.
+
+Un exemple pourrait clarifier les choses.
+Supposons l'ensemble de Requêtes de niveau (RN) chronologique suivant:
+
+. RN de Construction produisant la Construction 1: Incident 1 est analysé sur la base des commentaires dans le RCV
+. RN de Construction produisant la Construction 2: Incident 2 est analysé sur la base des commentaires dans le RCV
+. RN pour délivrer, délivrant la Construction 2: Incident 1 et Incident 2 sont associés (à partir des 2 Requêtes de niveau de Construction précédentes)
+. RN de Construction produisant la Construction 3: Incident 3 est analysé sur la base des commentaires dans le RCV
+. RN de Construction produisant la Construction 4: Incident 4 est analysé sur la base des commentaires dans le RCV
+. RN pour délivrer, délivrant la Construction 4: Incident 3 et Incident 4 sont associés (à partir des 2 Requêtes de niveau de Construction précédentes)
+. RN pour re-délivrer (la Construction 4): Incident 3 et Incident 4 sont associés (copiés de la Requête de niveau pour délivrer qui a délivré la Construction 4)
+. RN pour restaurer la Construction 2: Incident 1 et Incident 2 sont associés (copiés de la Requête de niveau pour délivrer qui a délivré la Construction 2)
+
+
+=== Ajouter des Commentaires
+
+Outre la récupération de l'information à partir de Jira et l'intégration dans IKAN ALM, l'information sur les Requêtes de niveau IKAN ALM est également intégrée dans Jira sous forme de commentaires aux Incidents Jira.
+La possibilité d'ajouter des commentaires est contrôlée par le champ "Ajouter des Commentaires" dans la définition du Système de Suivi des Incidents IKAN ALM.
+
+Actuellement, les commentaires des Incidents ne sont pas configurables et, en général, ils ressemblent à:
+
+image::fig5-4.png[,772,226] 
+
+Comme vous pouvez le constater, le commentaire d'Incident contient un lien direct vers la Requête de niveau IKAN ALM concernée, ce qui permet aux Utilisateurs d'afficher les détails d'une Construction qui résout cet Incident.
+
+=== Modification et synchronisation manuelle des Incidents
+
+La qualité des liens créés et de la synchronisation dépend de la qualité des modèles de correspondance et de la qualité des messages d'enregistrement.
+Il se peut que les références d'Incident soient oubliés dans les messages d'enregistrement, que tous les identifiants d'Incident ne soient pas analysés ou que des identifiants d'Incident non valides soient analysés (faux résultats positifs). Dans ces cas, il peut être nécessaire d'ajouter, modifier, supprimer et/ou synchroniser les Incidents manuellement.
+
+Heureusement, toutes ces fonctions sont disponibles dans l'Interface utilisateur IKAN ALM sur l'onglet "Incidents" de la page __Informations détaillées__.
+
+image::fig5-5.png[,723,509] 
+
+Pour plus d'informations, se référer au __Guide
+de l'Utilisateur IKAN ALM__.
+
+
+[[_troubelshooting]]
+== Résolution des problèmes
+
+En général, vous devez utiliser le bouton "Vérifier la connexion" dans la fenêtre "Modifier un Système de Suivi des Incidents". Vérifier les erreurs rapportées dans les champs "Message" et "Trace de la pile". Ils devraient contenir de l'information utile.
+
+Les autres problèmes mentionnés supposent que la vérification de la connexion n'a pas rapporté d'erreurs.
+
+=== Aucun Incident n'est associé à la Requête de niveau
+
+Des Incidents devraient être associés à la Requête de niveau, mais l'onglet _Incidents_ de la page _Informations détaillées_ n'en affiche pas.
+
+Causes possibles:
+
+* La Phase "Suivi des Incidents" n'a pas été ajoutée au Niveau de la Requête de Niveau.
++
+Vérifiez si la Phase "Suivi des Incidents" est affichée sur la page _Journaux de Phase_ de la fenêtre "Informations détaillées"? Si cela n'est pas le cas, modifiez les Phases du Niveau et ajoutez la Phase "Suivi des Incidents" (<<_linkissuetrackingsystem>>).
+
+* La Phase "Suivi des Incidents" a échoué.
++
+Vérifiez les erreurs dans le journal de la Phase "Suivi des Incidents".
+
+* La Phase "Suivi des Incidents" a réussi, mais aucun Incident n'est traité.
++
+Vérifiez le journal.
+Il devrait mentionner les modèles utilisés, les balises RCV utilisées pour chercher les messages d'enregistrement et les Incidents trouvés.

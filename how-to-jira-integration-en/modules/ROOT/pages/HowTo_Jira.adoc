@@ -1,0 +1,385 @@
+// The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
+:imagesdir: ../images
+:description: Jira Installation How-to (English)
+:revnumber: v5.7
+:revdate: 17.05.2016
+
+= How To Guide: Integrating Jira with IKAN ALM
+
+[[_introduction]]
+== Introduction
+
+The IKAN ALM Issue Tracking functionality provides the possibility to link issues from an external issue tracking system to an IKAN ALM Level Request.
+
+Issues can get linked to a Level Request in the following ways:
+
+* via an automatic search for handled issues in the comments provided by the developers when committing or checking in sources into the VCR. This automatic search is done in a separate phase during the handling of a Build Level Request, and is based on a regular expression describing the issue tracking number format. Currently, this is only supported for Subversion, Git, Team Foundation and CVS Version Control Repositories.
+* via the enumeration of solved issues when delivering to Test/Production levels enabling easy generation of Release Notes.
+* via manual addition of an issue to a successful Level Request, using the GUI widgets on the _Level Request Detail_ screen.
+
+
+[NOTE]
+====
+
+You can only click through from a linked issue in IKAN ALM to the issue in the third-party Issue Tracking tool if the tool offers a web interface.
+====
+
+On top of this basic Issue Tracking functionality, IKAN ALM offers a more advanced integration for Atlassian Jira, Microsoft Team Foundation Server (TFS), HP Quality Center and CollabNet TeamForge with following additional functionality:
+
+* possibility to test the connection with the Issue Tracking system at the moment you create or edit an Issue Tracking System definition
+* automatic synchronization of handled issues with the Issue Tracking system: IKAN ALM retrieves additional information, such as a short description, the owner, the priority, ... from the corresponding Jira Issue, TFS Work Item, HP Quality Center Defect or TeamForge Artifact. This information is synchronized each time the build result evolves in the IKAN ALM lifecycle.
+* manual synchronization of issues linked to a Level Request on the Issues tab page of the _Level Request Detail_ screen.
+* option to automatically add a comment to the issue/defect/artifact in Jira/TFS/HP Quality Center/TeamForge after a successful Level Request. This comment will contain a link to the IKAN ALM Level Request.
+
+
+In this document we will focus on how to set up the Jira integration of IKAN ALM.
+First, we will describe how to set up Jira so that IKAN ALM can connect to it.
+Next, we will explain how to create an Issue Tracking System in IKAN ALM that represents your Jira system.
+After that, we will describe the steps needed to enable Jira integration in an IKAN ALM Project.
+Finally, we will give some detailed background information about IKAN ALM's integration with Issue Tracking Systems.
+
+[[_jira_configurationprerequisites]]
+== Jira Configuration and Prerequisites
+
+=== Supported Jira Versions
+
+IKAN ALM is currently able to integrate with Jira versions 5.x and above.
+
+=== Enable remote API calls
+
+IKAN ALM uses REST to connect to Jira.
+
+For the integration to work, remote API calls must be enabled.
+Verify this as follows:
+
+. Log on to Jira as an administrator.
+. Navigate to _Administration > General Configuration_ and make sure that _Accept remote API calls_ has been set to __ON__.
++
+image::fig2-1.png[,358,278]
+
+
+=== Verify Jira's Context in Tomcat
+
+In ``JIRA_HOME/conf/server.xml``, it is possible to specify the context path of the Jira web-application.
+
+For example: 
+
+`<Context docBase="${catalina.home}/atlassian-jira" path="/jira" reloadable="false" useHttpOnly="true">`
+
+Here, the context path is `"/jira"`.
+
+[NOTE]
+====
+You should be aware that this setting influences the values for the "URL" field and the "jiraRESTUrl" property of an IKAN ALM Issue Tracking System.
+
+For example, if you set path="/jira", then the "URL" field will look like "http(s)://<host>:<port>/jira/browse/${issueId}".
+====
+
+[[_creatissuetrackingsystem]]
+== Creating an Issue Tracking System in IKAN ALM
+
+You must create an Issue Tracking System in IKAN ALM that represents your Jira system before you can assign and use it in an IKAN ALM Project.
+
+. Log on as an IKAN ALM Administrator, and select __Global Administration > Issue Tracking > Create Issue Tracking System__.
++
+The _Create Issue Tracking System_ screen is displayed:
++
+image::fig3-1.png[,540,468] 
++
+. Fill out the fields in the _Create Issue Tracking System_ panel. Fields marked with an asterisk are mandatory.
++
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+| Field
+| Description
+
+|Name
+|The name of the Issue Tracking System, like "Jira"
+
+|Description
+|A meaningful description, like "Jira Issue Tracking System on server X"
+
+|Plugin Factory Class
+|The fully qualified name of the Java Class that can produce IKAN ALM Issue Tracking System Plugin implementations.
+
+You can select a value from the list or type in your own class name (<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Mapping a Jira System to an IKAN ALM Issue Tracking System>>).
+
+For Jira, select "be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory"
+
+|URL
+|The direct URL to the details of 1 Issue.
+In the URL, the Key of the Issue is represented by the variable ${issueId}.
+
+The value depends on settings in your Jira system and also on the strategy that you choose to map a Jira system to an IKAN ALM Issue Tracking System (<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Mapping a Jira System to an IKAN ALM Issue Tracking System>>).
+
+Here are some example values:
+
+http(s)://<host>:<port>/jira/browse/${issueId}
+
+http(s)://<host>:<port>/browse/${issueId}
+
+http(s)://<host>:<port>/browse/PROJECTKEY-${issueId}
+
+|User
+|The Jira user that IKAN ALM will use to connect to Jira
+
+|Password
+|The password of the Jira user that IKAN ALM will use to connect to Jira
+
+|Issue Pattern and Issue ID Pattern
+a|Both fields should contain a regular expression that IKAN ALM uses to find Issue keys in the VCR commit messages.
+Issue Pattern is the pattern to find a reference to an Issue in the commit text, Issue ID Pattern is the pattern to find the actual Issue ID (or key) inside the matched Issue reference.
+Usually, the distinction between the patterns is not made and both have the same value.
+
+Some examples:
+
+* Both patterns set to "[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+" (Recommended): an Issue reference is represented as 2 or more capital letters or digits, followed by a dash (-), followed by 1 or more letters. The ID (or key) of an Issue is the whole of this reference. Example matches: ABC-123, AD-1, PROJECT1-1452
+
+* Both patterns set to "PROJKEY-[0-9]+": an Issue reference is represented as the String "PROJKEY", followed by a dash (-), followed by 1 or more letters. The ID (or key) of an Issue is the whole of this reference. Example matches: PROJKEY-1, PROJKEY-135. As you see, only Issues for the Jira Project "PROJKEY" are matched.
+
+// Comment: Used backslashes for the special characters, asterisk, plus...
+* ADVANCED: Issue Pattern set to 
+"Issues:([0-9A-Z][0-9A-Z][0-9A-Z]\*-[0-9]\+)(,[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+)\*" and Issue ID Pattern set to "[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+": an Issue reference is represented as the String "Issues:", followed by a comma-separated list of Issue IDs. The ID of an Issue is represented as 2 or more capital letters or digits, followed by a dash (-), followed by 1 or more letters. So, given the following commit message: "`I fixed the following Issues:WEB-1,WEB-2,WEB3`", the matched Issue reference is "`Issues:WEB-1,WEB-2,WEB3`", and the matched IDs of the Issues are WEB-1, WEB-2, and WEB-3
+
+|Add Comments
+|If you set this to "`Yes`", then IKAN ALM will add a Jira comment to an Issue when it is linked to an IKAN ALM Level Request.
+See later for a more detailed explanation.
+|===
+
+
+. Once you have filled out the fields, click __Create__.
++
+You will be redirected to the __Issue Tracking Systems Overview__, and a warning will be displayed at the top of the page:
++
+image::fig3-2.png[,449,46] 
++
+This warning is displayed, because the Jira Issue Tracking System plugin has a property that needs to be set: jiraRESTUrl.
+It represents the Jira REST API URL and is needed by IKAN ALM for its connection with Jira.
+
+. Find the Issue Tracking System you just created in the overview, click the image:icons/edit.gif[,15,15] _Edit_ link to display the _Edit Issue Tracking System_ screen and select the _Edit Properties_ link.
++
+image::fig3-3.png[,1029,367] 
+
+. Next, click the image:icons/icon_createparameter.png[,15,15]  Create link.
++
+. Specify the value for the REST API URL.
++
+image::fig3-4.png[,613,457] 
++
+Valid values depend on the settings in your Jira system, and are closely related to the value of the URL field of the Issue Tracking System. 
++
+Some example values:
+
+* http://<host>:<port>/jira/rest
+* https://<host>:<port>/rest
+
+. Click _Create_ to confirm the creation of the Property.
+
+. Click __Back __to return to the Overview.
++
+Find the Issue Tracking System you just created, and click the image:icons/edit.gif[,15,15] _Edit_ link.
++
+The warning about the missing value should now have disappeared.
++
+image::fig3-5.png[,538,600] 
+
+. Test whether IKAN ALM can connect with your Jira system by clicking the _Test Connection_ button.
++
+If the test is not successful, correct the errors reported in the Stack Trace field and perform the test again.
++
+Now that we have defined a Jira Issue Tracking System, we can start using it in our IKAN ALM Projects.
+For that we need to link the Issue Tracking System to a Project.
+
+[[_linkissuetrackingsystem]]
+== Linking an Issue Tracking System to a Project
+
+. Log on as an IKAN ALM user that has administrator access to the Project to be linked.
+
+. Go to _Project Administration_ and select the Project from the __Projects Overview__.
+
+. Underneath the _Project Info_ panel, click the _Edit_ button.
+
+. Select the created Issue Tracking System from the "`Issue Tracking System`" drop-down box and click the _Save_ button.
++
+image::fig4-1.png[,551,662] 
++
+Next, we need to add an "Issue Tracking Phase" to each existing Level.
+This is crucial, because all Issue Tracking related operations performed by IKAN ALM are executed during this Issue Tracking Phase.
+If a Level has no Issue Tracking Phase, then no issues are linked to Level Requests of that Level, and no comments are added to the issues!
+
+. For each existing Level in the Project, you must do the following:
++
+[NOTE]
+====
+We only need to perform this procedure for Levels created before the Project was linked to an Issue tracking System.
+Levels created after an Issue Tracking System has been linked will get the Issue Tracking Phase by default! 
+====
++
+.. Edit the Level, either from the _Levels Overview_ or from the _Lifecycles Overview_ page.
++
+image::fig4-2.png[,946,435] 
++
+.. Next, click the image:icons/edit_phases.gif[,15,15] _Edit Phases_ link underneath the __Phases Overview__.
++
+image::fig4-3.png[,562,453] 
++
+.. Next, click the _Insert Phase_ link.
++
+The __Insert Phase __screen is displayed.
++
+image::fig4-4.png[,1042,679] 
+.. Fill out the fields for the new Phase.
++
+The following fields are available:
++
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+| Field
+| Meaning
+
+|Phase
+|From the _Available
+Phases_ panel, select the Level Phase to add.
+
+|Fail on Error
+|In this field, indicate whether the Level Request is considered failed when this Phase goes in Error.
+
+|Insert at Position
+|This field indicates at which position the Phase will be inserted into the Level workflow.
+The Phase Position is also indicated on the _Phases Overview_ panel.
+It is a good practice to insert the _Issue Tracking_ Phase before the _Cleanup Work Copy_ Phase.
+
+|Next Phase On Error
+|This field indicates the next Phase to execute in case this Phase goes in Error.
+It is recommended to select the _Cleanup Work Copy_ Phase.
+
+|Label
+|In this field you can add a Label for the Phase to be inserted.
+
+In case you use the same Phase several times, adding a label is useful to provide additional information concerning the usage of the Phase.
+|===
+
+.. Click _Insert_ to confirm the creation of the new Phase.
+
+
+[[_integration]]
+== Integrating an External Issue Tracking System 
+
+This section provides detailed information on how IKAN ALM integrates with an external Issue Tracking system.
+More specifically, it describes what tasks are performed by the IKAN ALM Issue Tracking Phase that is executed during a Level Request.
+
+=== Issue Tracking Phase log
+
+As said before, all Issue Tracking related operations are performed during the Issue Tracking Phase.
+The logs produced by these operations can be consulted in the IKAN ALM user interface, on the Phase Logs tab of the _Level Request Detail_ page:
+
+image::fig5-1.png[,927,813] 
+
+The "Message" field contains the log messages of the operations performed by the Issue Tracking Phase.
+
+=== Build Level Requests
+
+A Build Level Request is a Level Request of a Build Level.
+A Build Level Request will typically retrieve the latest source code from the VCR (Version Control Repository), build it, and then label it in the VCR for later reference.
+
+The Issue Tracking Phase in a Build Level Request performs the following operations:
+
+* parse the VCR commit messages and find references to issues,
+* link the identified issues to the Level Request,
+* synchronize the data of the linked issues with the most recent information present in Jira
+
+
+First, the messages are retrieved from commits performed since the latest successful Level Request.
+In these messages, Issue IDs (Keys) are searched for using the patterns defined in the Issue Tracking System (Issue Pattern and Issue ID Pattern fields). The pattern-matching is case-insensitive. 
+
+From the found issues, duplicates are removed, and they are linked with the current Level Request.
+
+Finally, IKAN ALM tries to match the issue in the Jira repository.
+If the issue is found, the description, status, owner, owner and priority is retrieved from Jira, and this information is stored in the IKAN ALM representation of the Issue.
+
+=== Deliver, Re-deliver and Rollback Level Requests
+
+When you create a Level Request for a Test or Production Level, in IKAN ALM terminology that means you "`Deliver`" to that Test or Production Level.
+The "`Current Active Build`" of a Level is the last successfully delivered Build on that Level. 
+
+We speak of a "`Deliver Level Request`" when you Deliver a Build with a build number that is higher than the Current Active Build on that Level. 
+
+We speak of a "`Re-deliver Level Request`" when you Deliver a Build with a build number that is the same than the Current Active Build on that Level. 
+
+We speak of a "`Rollback Level Request`" when you Deliver a Build with a build number that is lower than the Current Active Build on that Level. 
+
+The Issue Tracking Phase in a Deliver Level Request performs the following operations:
+
+* Find the Issues that were linked to Build Level Requests executed since the last successful Deliver Level Request
+* Link the Issues from all these Build Level Request to the current Deliver Level Request, eliminating duplicates
+* synchronize the data of the linked issues with the most recent information present in Jira
+
+
+For a Re-deliver or a Rollback Level Request there always exists a previous Deliver Level Request.
+Instead of enumerating through all Build Level Requests, the Issues are copied from the previous Deliver Level Request, and finally their data synchronized with the most recent information present in Jira.
+
+It is important to understand that in Deliver, Re-deliver and Rollback Level Requests issues are always linked by "`copying`" them from other Level Requests, either from Build Level Requests or other Deliver Level Requests.
+Issues are never parsed from the commit messages when running Deliver, Re-deliver or Rollback Level Requests!
+
+An example may help to clarify things.
+
+Suppose the following set of chronological Level Requests (LR):
+
+. Build LR producing Build 1: issue1 is parsed from the VCR comments
+. Build LR producing Build 2: issue 2 is parsed from the VCR comments
+. Deliver LR, delivering Build 2: issue1 and issue2 are linked (from the 2 previous Build Level Requests)
+. Build LR producing Build 3: issue 3 is parsed from the VCR comments
+. Build LR producing Build 4: issue 4 is parsed from the VCR comments
+. Deliver LR, delivering Build 4: issue3 and issue4 are linked (from the 2 previous Build Level Requests)
+. Re-Deliver LR (re-delivers Build 4): issue3 and issue4 are linked (copied from the Deliver Level Request that delivered Build 4)
+. Rollback LR rolls back to Build 2: issue1 and issue2 are linked (copied from the Deliver Level Request that delivered Build 2)
+
+
+=== Add Comments
+
+Apart from retrieving information from Jira and linking it in IKAN ALM, information about IKAN ALM Level Requests is also sent to Jira, in the form of comments to Jira Issues.
+Whether comments are added or not is controlled by the "Add Comments" field of the IKAN ALM Issue Tracking System.
+
+The issue comments are currently not configurable, and look generally like this:
+
+image::fig5-4_2015.png[,772,226] 
+
+As you can see, the Issue comment contains a direct link to the related IKAN ALM Level Request, making it easy for users to see the details of a Build that addresses the Issue.
+
+=== Manual Editing and Synchronization of Issues
+
+Automatic linking and synchronization of Issues is only as good as the quality of the matching patterns and the quality of the commit messages.
+Sometimes issue references are forgotten in commit messages, not all issue IDs parsed from the messages, or invalid issue IDs parsed (false positives). In these cases it may be needed to manually add, edit, delete and/or synchronize Issues.
+
+Luckily, all these functions are available in the IKAN ALM user interface, on the Issues tab page of the _Level Request
+Detail_ page.
+
+
+image::fig5-5.png[,723,509] 
+
+For more detailed information, refer to the __IKAN ALM User Guide__.
+
+
+[[_troubelshooting]]
+== Troubleshooting
+
+Generally, you should use the "Test Connection" button on the "`Edit Issue Tracking System`" page.
+Examine the errors reported in the Message and Stack Trace fields, they should contain helpful information.
+The other problems mentioned here assume the "Test Connection" did not report any errors.
+
+=== No Issues are added to the Level Request
+
+Issues are expected to have been linked to the Level Request, but the _Issues_ page on the _Level
+Request Detail_ screen does not show them.
+
+Possible causes:
+
+* The Level of the Request doesn't have the Issue Tracking Phase added.
+Is the Issue Tracking Phase displayed on the _Phase
+Logs_ page of the Level Request Detail screen? If not, edit the phases of the Level and add the Issue Tracking Phase. <<_linkissuetrackingsystem>>
+* The Issue Tracking Phase failed.
+Check the Issue Tracking Phase log for errors.
+* The Issue Tracking Phase succeeded, but no issues were parsed.
+Check the log, it should mention the patterns used, the VCR tags it used to search for commit messages, and the issues it detected.

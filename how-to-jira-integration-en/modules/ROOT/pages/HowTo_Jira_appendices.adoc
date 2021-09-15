@@ -1,0 +1,36 @@
+:sectnums!:
+
+[appendix]
+[[_mapping_a_jira_system]]
+== Mapping a Jira System to an IKAN ALM Issue Tracking System
+
+There are several ways to represent a Jira system in IKAN ALM.
+We give 2 examples on how to map this, but other possibilities exist.
+
+=== One (1) IKAN ALM Issue Tracking System represents the host's entire Jira system
+
+This is the usual way people map Jira to an IKAN ALM Issue Tracking System.
+To accomplish this, you set the following properties:
+
+* URL: of the form http(s)://<host>:<port>/jira/browse/${issueId}
+* Issue Pattern and Issue ID Pattern: both set to [0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+
+* JiraRESTUrl: of the form \http://<host>:<port>/rest
+
+This Issue Tracking System will match issues from all Jira Projects defined in the Jira system.
+
+=== One (1) IKAN ALM Issue Tracking System per Jira Project
+
+In this case one Jira system is represented by several IKAN ALM Issue Tracking Systems, on a per-Project basis.
+This allows for more granular control over the Issue Tracking integration.
+Maybe you need different credentials to access ProjectA or ProjectB.
+Maybe you want to add comments to ProjectA, but not to ProjectB, etc...
+
+To accomplish this, you set the following properties:
+
+* URL: of the form http(s)://<host>:<port>/jira/browse/PROJ1KEY-${issueId}
+* Issue Pattern and Issue ID Pattern : both set to PROJ1KEY-[0-9]+
+* JiraRESTUrl: of the form \http://<host>:<port>/rest
+
+This Issue Tracking System will only match issues from the Jira Project "`PROJ1KEY`".
+
+:sectnums:
