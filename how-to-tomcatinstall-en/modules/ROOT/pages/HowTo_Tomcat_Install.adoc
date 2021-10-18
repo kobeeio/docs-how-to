@@ -464,6 +464,13 @@ A migration log is created in the _INSTALL_DIR/almDbMigration.log_ file and will
 
 image::db_migration.png[,762,560] 
 
+=== Clearing the browser cache
+
+TODO
+
+=== JAAS vtldap -> ldaptive
+
+TODO
 
 == Manually Installing and Removing the IKAN ALM Server as a Windows Service
 
