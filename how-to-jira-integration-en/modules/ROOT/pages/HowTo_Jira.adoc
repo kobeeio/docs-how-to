@@ -1,8 +1,8 @@
 // The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
 :imagesdir: ../images
 :description: Jira Installation How-to (English)
-:revnumber: v5.7
-:revdate: 17.05.2016
+:revnumber: v5.9
+:revdate: 8.11.2021
 
 = How To Guide: Integrating Jira with IKAN ALM
 
@@ -24,12 +24,12 @@ Issues can get linked to a Level Request in the following ways:
 You can only click through from a linked issue in IKAN ALM to the issue in the third-party Issue Tracking tool if the tool offers a web interface.
 ====
 
-On top of this basic Issue Tracking functionality, IKAN ALM offers a more advanced integration for Atlassian Jira, Microsoft Team Foundation Server (TFS), HP Quality Center and CollabNet TeamForge with following additional functionality:
+On top of this basic Issue Tracking functionality, IKAN ALM offers a more advanced integration for Atlassian Jira, Microsoft Team Foundation Server (TFS), MicroFocus ALM and GitHub with following additional functionality:
 
 * possibility to test the connection with the Issue Tracking system at the moment you create or edit an Issue Tracking System definition
-* automatic synchronization of handled issues with the Issue Tracking system: IKAN ALM retrieves additional information, such as a short description, the owner, the priority, ... from the corresponding Jira Issue, TFS Work Item, HP Quality Center Defect or TeamForge Artifact. This information is synchronized each time the build result evolves in the IKAN ALM lifecycle.
+* automatic synchronization of handled issues with the Issue Tracking system: IKAN ALM retrieves additional information, such as a short description, the owner, the priority, ... from the corresponding Jira Issue, TFS Work Item, MF ALM Defect or GitHub Issue. This information is synchronized each time the build result evolves in the IKAN ALM lifecycle.
 * manual synchronization of issues linked to a Level Request on the Issues tab page of the _Level Request Detail_ screen.
-* option to automatically add a comment to the issue/defect/artifact in Jira/TFS/HP Quality Center/TeamForge after a successful Level Request. This comment will contain a link to the IKAN ALM Level Request.
+* option to automatically add a comment to the issue/defect/artifact in Jira/TFS/MF ALM/GitHub after a successful Level Request. This comment will contain a link to the IKAN ALM Level Request.
 
 
 In this document we will focus on how to set up the Jira integration of IKAN ALM.
@@ -55,7 +55,25 @@ Verify this as follows:
 . Log on to Jira as an administrator.
 . Navigate to _Administration > General Configuration_ and make sure that _Accept remote API calls_ has been set to __ON__.
 +
-image::fig2-1.png[,358,278]
+image::fig2-1.png[,349,269]
+
+=== Generate an API Token
+
+Jira Cloud requires an API token to authenticate with the Jira REST API. To generate this token for Jira Cloud:
+
+. Go to https://id.atlassian.com/manage-profile/security/api-tokens.
+. Log in as the user you want to use to authenticate with Jira Cloud.
+. Click "Create API token".
++
+image::fig2-2.png[,699,376]
+. Enter a memorable name and click create.
++
+image::fig2-3.png[,416,319]
+. Copy this token somewhere secure. You will need it later.
++
+image::fig2-4.png[,413,277]
+
+
 
 
 === Verify Jira's Context in Tomcat
@@ -84,7 +102,7 @@ You must create an Issue Tracking System in IKAN ALM that represents your Jira s
 +
 The _Create Issue Tracking System_ screen is displayed:
 +
-image::fig3-1.png[,540,468] 
+image::fig3-1.png[,615,445] 
 +
 . Fill out the fields in the _Create Issue Tracking System_ panel. Fields marked with an asterisk are mandatory.
 +
@@ -97,15 +115,15 @@ image::fig3-1.png[,540,468]
 |Name
 |The name of the Issue Tracking System, like "Jira"
 
-|Description
-|A meaningful description, like "Jira Issue Tracking System on server X"
-
 |Plugin Factory Class
 |The fully qualified name of the Java Class that can produce IKAN ALM Issue Tracking System Plugin implementations.
 
 You can select a value from the list or type in your own class name (<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Mapping a Jira System to an IKAN ALM Issue Tracking System>>).
 
 For Jira, select "be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory"
+
+|Description
+|A meaningful description, like "Jira Issue Tracking System on server X"
 
 |URL
 |The direct URL to the details of 1 Issue.
@@ -152,20 +170,20 @@ See later for a more detailed explanation.
 +
 You will be redirected to the __Issue Tracking Systems Overview__, and a warning will be displayed at the top of the page:
 +
-image::fig3-2.png[,449,46] 
+image::fig3-2.png[,414,23] 
 +
 This warning is displayed, because the Jira Issue Tracking System plugin has a property that needs to be set: jiraRESTUrl.
 It represents the Jira REST API URL and is needed by IKAN ALM for its connection with Jira.
 
 . Find the Issue Tracking System you just created in the overview, click the image:icons/edit.gif[,15,15] _Edit_ link to display the _Edit Issue Tracking System_ screen and select the _Edit Properties_ link.
 +
-image::fig3-3.png[,1029,367] 
+image::fig3-3.png[,697,449] 
 
 . Next, click the image:icons/icon_createparameter.png[,15,15]  Create link.
 +
 . Specify the value for the REST API URL.
 +
-image::fig3-4.png[,613,457] 
+image::fig3-4.png[,578,254] 
 +
 Valid values depend on the settings in your Jira system, and are closely related to the value of the URL field of the Issue Tracking System. 
 +
@@ -174,21 +192,21 @@ Some example values:
 * http://<host>:<port>/jira/rest
 * https://<host>:<port>/rest
 
-. Click _Create_ to confirm the creation of the Property.
+. Click _Create_ to confirm the creation of the Property and close the dialog.
 
-. Click __Back __to return to the Overview.
+. The warning about the missing value should now have disappeared.
 +
-Find the Issue Tracking System you just created, and click the image:icons/edit.gif[,15,15] _Edit_ link.
-+
-The warning about the missing value should now have disappeared.
-+
-image::fig3-5.png[,538,600] 
+image::fig3-5.png[,884,565] 
+
+. If using Jira Cloud, repeat the above process to create two additional Issue Tracking System Properties: jiraUseBasicAuth set to "true" in order to enable basic auth, as well as jiraBasicAuthToken set to the API token generated during Jira configuration.
 
 . Test whether IKAN ALM can connect with your Jira system by clicking the _Test Connection_ button.
 +
 If the test is not successful, correct the errors reported in the Stack Trace field and perform the test again.
 +
 Now that we have defined a Jira Issue Tracking System, we can start using it in our IKAN ALM Projects.
+
+
 For that we need to link the Issue Tracking System to a Project.
 
 [[_linkissuetrackingsystem]]
@@ -202,7 +220,7 @@ For that we need to link the Issue Tracking System to a Project.
 
 . Select the created Issue Tracking System from the "`Issue Tracking System`" drop-down box and click the _Save_ button.
 +
-image::fig4-1.png[,551,662] 
+image::fig4-1.png[,455,578] 
 +
 Next, we need to add an "Issue Tracking Phase" to each existing Level.
 This is crucial, because all Issue Tracking related operations performed by IKAN ALM are executed during this Issue Tracking Phase.
@@ -218,17 +236,17 @@ Levels created after an Issue Tracking System has been linked will get the Issue
 +
 .. Edit the Level, either from the _Levels Overview_ or from the _Lifecycles Overview_ page.
 +
-image::fig4-2.png[,946,435] 
+image::fig4-2.png[,936,418] 
 +
 .. Next, click the image:icons/edit_phases.gif[,15,15] _Edit Phases_ link underneath the __Phases Overview__.
 +
-image::fig4-3.png[,562,453] 
+image::fig4-3.png[,628,470] 
 +
 .. Next, click the _Insert Phase_ link.
 +
 The __Insert Phase __screen is displayed.
 +
-image::fig4-4.png[,1042,679] 
+image::fig4-4.png[,1032,704] 
 .. Fill out the fields for the new Phase.
 +
 The following fields are available:
@@ -275,7 +293,7 @@ More specifically, it describes what tasks are performed by the IKAN ALM Issue T
 As said before, all Issue Tracking related operations are performed during the Issue Tracking Phase.
 The logs produced by these operations can be consulted in the IKAN ALM user interface, on the Phase Logs tab of the _Level Request Detail_ page:
 
-image::fig5-1.png[,927,813] 
+image::fig5-1.png[,1210,929] 
 
 The "Message" field contains the log messages of the operations performed by the Issue Tracking Phase.
 
@@ -344,7 +362,7 @@ Whether comments are added or not is controlled by the "Add Comments" field of t
 
 The issue comments are currently not configurable, and look generally like this:
 
-image::fig5-4_2015.png[,772,226] 
+image::fig5-4_2015.png[,758,218] 
 
 As you can see, the Issue comment contains a direct link to the related IKAN ALM Level Request, making it easy for users to see the details of a Build that addresses the Issue.
 
@@ -357,7 +375,7 @@ Luckily, all these functions are available in the IKAN ALM user interface, on th
 Detail_ page.
 
 
-image::fig5-5.png[,723,509] 
+image::fig5-5.png[,691,492] 
 
 For more detailed information, refer to the __IKAN ALM User Guide__.
 
