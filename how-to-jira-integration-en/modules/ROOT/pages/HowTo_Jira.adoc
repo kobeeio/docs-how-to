@@ -168,18 +168,14 @@ See later for a more detailed explanation.
 
 . Once you have filled out the fields, click __Create__.
 +
-You will be redirected to the __Issue Tracking Systems Overview__, and a warning will be displayed at the top of the page:
-+
-image::fig3-2.png[,414,23] 
+You will be redirected to the Edit page for the newly created Issue Tracking System, and a warning will be displayed at the top of the page.
 +
 This warning is displayed, because the Jira Issue Tracking System plugin has a property that needs to be set: jiraRESTUrl.
 It represents the Jira REST API URL and is needed by IKAN ALM for its connection with Jira.
-
-. Find the Issue Tracking System you just created in the overview, click the image:icons/edit.gif[,15,15] _Edit_ link to display the _Edit Issue Tracking System_ screen and select the _Edit Properties_ link.
 +
 image::fig3-3.png[,697,449] 
 
-. Next, click the image:icons/icon_createparameter.png[,15,15]  Create link.
+. Click the image:icons/icon_createparameter.png[,15,15]  Create link next to the jiraRESTUrl property.
 +
 . Specify the value for the REST API URL.
 +
