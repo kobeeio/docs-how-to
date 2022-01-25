@@ -1,0 +1,6 @@
+name: how-to-github-integration-fr
+title: Github integration How-to
+version: '5.9'
+start_page: ROOT:HowTo_GitHub.adoc
+nav:
+- modules/ROOT/nav.adoc  
