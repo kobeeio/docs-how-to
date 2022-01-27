@@ -1,8 +1,8 @@
 // The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
 :imagesdir: ../images
-:description: Jira Installation How-to (French)
-:revnumber: v5.7
-:revdate: 17.05.2016
+:description: Installation de Jira Comment (Français)
+:revnumber: v5.9
+:revdate: 25.01.2022
 
 = Guide pratique pour l'intégration de Jira avec IKAN ALM
 
@@ -23,12 +23,12 @@ Les Incidents peuvent être reliés à une Requête de Niveau selon l'une des ma
 Un lien permettant de passer directement de l'Incident dans IKAN ALM vers l'Incident dans l'outil de Suivi des Incidents externe est disponible si l'outil externe dispose d'une interface Web.
 ====
 
-En plus de cette fonctionnalité de Suivi des Incidents de base, IKAN ALM offre une intégration plus avancée pour Atlassian Jira, Microsoft Team Foundation Server (TFS), HP Quality Center et CollabNet TeamForge avec les fonctionnalités additionnelles suivantes:
+En plus de cette fonctionnalité de Suivi des Incidents de base, IKAN ALM offre une intégration plus avancée pour Atlassian Jira, Microsoft Team Foundation Server (TFS), MicroFocus ALM et GitHub avec les fonctionnalités additionnelles suivantes:
 
 * la possibilité de tester la connexion avec le Système de Suivi des Incidents au moment de la création ou de la modification d'une définition de Système de Suivi des Incidents.
-* la synchronisation automatique des incidents traités dans le Système de Suivi des Incidents: IKAN ALM récupère des informations additionnelles, telles que la description, le propriétaire, la priorité, ... de l'Incident Jira, de l'élément de travail Team Foundation, du Defect HP Quality Center ou de l'Artefact TeamForge correspondant. Ces informations seront synchronisées chaque fois que le résultat de construction évoluera dans le Cycle de Vie IKAN ALM.
+* la synchronisation automatique des incidents traités dans le Système de Suivi des Incidents: IKAN ALM récupère des informations additionnelles, telles que la description, le propriétaire, la priorité, ... de l'Incident Jira, de l'élément de travail Team Foundation, du Defect MF ALM ou de l'incident GitHub correspondant. Ces informations seront synchronisées chaque fois que le résultat de construction évoluera dans le Cycle de Vie IKAN ALM.
 * synchronisation manuelle des Incidents associés à une Requête de niveau dans l'onglet "Incidents" de la fenêtre __Informations détaillées__.
-* possibilité d'ajouter automatiquement un commentaire pour un incident/defect/artefact dans Jira/TFS/HP Quality Center/TeamForge après une Requête de niveau réussie. Ce commentaire contiendra un lien vers la Requête de Niveau en IKAN ALM.
+* possibilité d'ajouter automatiquement un commentaire pour un incident/defect/artefact dans Jira/TFS/MF ALM/GitHub après une Requête de niveau réussie. Ce commentaire contiendra un lien vers la Requête de Niveau en IKAN ALM.
 
 Dans ce document nous nous concentrerons sur la façon d'effectuer l'intégration de Jira avec IKAN ALM.
 D'abord, nous décrirons comment il faut configurer Jira pour qu'IKAN ALM puisse s'y connecter.
@@ -44,7 +44,7 @@ Finalement, nous donnerons des informations de référence sur l'intégration d'
 
 Pour le moment, IKAN ALM peut s'intégrer avec les versions 5.x ou supérieure de Jira.
 
-=== Activer l'option "Accepter lesappels API distants"
+=== Activer l'option "Accepter les appels API distants"
 
 IKAN ALM utilise REST pour se connecter à Jira.
 
@@ -52,9 +52,27 @@ Pour le bon fonctionnement de l'intégration, les appels API distants doivent ê
 Vous pouvez vérifier cela comme suit:
 
 . Connectez-vous à Jira avec des droits d'accès d'Administrateur.
-. Naviguez vers _Administration > Configuration générale_  et assurez-vous que l'option _Accepter les appels API distants_ est établie à __OUI__. 
+. Naviguez vers _Administration > Configuration générale_  et assurez-vous que l'option _Accepter les appels API distants_ est établie à __OUI__. (Selon la version de Jira)
 +
-image::fig2-1.png[,358,278] 
+image::fig2-1.png[,351,271] 
+
+=== Générer un Jeton d'API
+
+Le Cloud Jira requiet un Jeton d'API pour s'authentifier avec le REST API Jira. Pour générer ce Jeton pour le Cloud Jira:
+
+. Allez vers https://id.atlassian.com/manage-profile/security/api-tokens.
+. Connectez-vous avec l'utilisateur que vous voulez utiliser pour l'authentification avec le Cloud Jira.
+. Cliquez sur "Créer un Jeton d'API".
++
+image::fig2-2.png[,590,261]
+. Entrez un nom mémorisable et cliquez sur le bouton "Créer".
++
+image::fig2-3.png[,399,296]
+. Cliquez sur l'oeil pour le lire et/ou cliquez sur "Copier" pour copier ce Jeton dans quelque chose de sécurisé. Vous en aurez besoin plus tard.
++
+image::fig2-4.png[,399,262]
+
+
 
 
 === Vérifier le contexte de Jira dans Tomcat
@@ -84,7 +102,7 @@ Dans IKAN ALM, vous devez d'abord créer le Système de Suivi des Incidents qui 
 +
 L'écran suivant s'affiche:
 +
-image::fig3-1.png[,641,419] 
+image::fig3-1.png[,609,399] 
 
 . Complétez les champs dans le panneau __Créer un Système de Suivi des Incidents__. Les champs marqués d'un astérisque sont obligatoires.
 +
@@ -97,9 +115,6 @@ image::fig3-1.png[,641,419]
 |Nom
 |Le nom du Système de Suivi des Incidents, comme par exemple "Jira"
 
-|Description
-|Une description significative, comme par exemple "Système de Suivi des Incidents Jira sur le Serveur X"
-
 |Classe «Plugin Factory» 
 |Le nom complet de la Classe Java qui peut produire des implémentations de l'extension de Système de Suivi des Incidents IKAN ALM.
 
@@ -107,6 +122,9 @@ Vous pouvez sélectionner une des valeurs de la liste ou saisir votre propre nom
 (<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Associer un système Jira à un Système de Suivi des Incidents IKAN ALM>>).
 
 Pour Jira, sélectionnez "be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory"
+
+|Description
+|Une description significative, comme par exemple "Système de Suivi des Incidents Jira sur le Serveur X"
 
 |URL complet
 |L'URL direct vers les détails d'un seul Incident.
@@ -150,23 +168,18 @@ Des explications plus détaillées suivront plus loin dans ce document.
 
 . Après avoir complété les champs, cliquez sur le bouton __Créer__.
 +
-Vous serez réorientés vers l'__Aperçu des Systèmes
-de Suivi des Incidents__ et un avertissement s'affichera en haut de la fenêtre:
-+
-image::fig3-2.png[,527,57] 
+Vous serez réorienté vers l'écran de modification du Système de Suivi des Incidents nouvellement créé et un avertissement s'affichera en haut de la fenêtre.
 +
 Cet avertissement s'affiche parce l'extension du Système de Suivi des Incidents Jira requiert que la propriété suivante soit spécifiée: jiraRESTUrl.
 Elle représente l'URL de l'API Jira REST et IKAN ALM en a besoin pour établir la connexion avec Jira.
-
-. Cherchez le Système de Suivi des Incidents que vous venez de créer et cliquez sur le lien image:icons/edit.gif[,15,15] _Modifier_ pour afficher la fenêtre _Modifier un Système de Suivi des Incidents_ et sélectionnez le lien __Modifier les Propriétés__.
 +
-image::fig3-3.png[,1035,378] 
+image::fig3-3.png[,1009,337] 
 
-. Ensuite, cliquez sur le lien image:icons/icon_createparameter.png[,15,15]  "Créer".
+. Ensuite, cliquez sur le lien image:icons/icon_createparameter.png[,15,15]  "Créer", le lien à côté de la proprièté jiraRESTUrl.
 
 . Spécifiez la valeur de l'URL de l'API Jira REST.
 +
-image::fig3-4.png[,716,452] 
+image::fig3-4.png[,689,414] 
 +
 Les valeurs valides dépendent des paramètres de votre système Jira.
 Elles sont étroitement liées à la valeur du champ "URL complet" du Système de Suivi des Incidents. 
@@ -176,15 +189,13 @@ Quelques exemples de valeurs:
 * http://<host>:<port>/jira/rest
 * https://<host>:<port>/rest
 
-. Cliquez sur le bouton _Créer_ pour confirmer la création de la Propriété.
+. Cliquez sur le bouton _Créer_ pour confirmer la création de la Propriété et fermer le dialogue.
 
-. Cliquez sur le bouton _Précédent_ pour retourner à l'aperçu.
+. Le message d'alerte au sujet de la valeur manquante doit avoir disparu maintenant.
 +
-Cherchez le Système de Suivi des Incidents que vous venez de créer et cliquez sur le lien image:icons/edit.gif[,15,15] __ Modifier__.
-+
-L'avertissement concernant la valeur manquante devra avoir disparu.
-+
-image::fig3-5.png[,634,543] 
+image::fig3-5.png[,603,523] 
+
+. Si vous utilisez le Cloud Jira, répétez le processus ci-dessus pour créer deux nouvelles propriétés pour le Système de Suivi d'incidents: jiraUseBasicAuth défini à « true » afin d’activer l’authentification de base, ainsi que jiraBasicAuthToken défini avec le Jeton d'API généré lors de la configuration de Jira.
 
 . Testez la connexion avec votre système Jira en cliquant sur le bouton __Vérifier la connexion__.
 +
@@ -205,7 +216,7 @@ Pour cela, nous devons associer le Système de Suivi des Incidents à un Projet.
 
 . Dans le champ "Système de Suivi des Incidents", sélectionnez le Système de Suivi des Incidents créé à partir du menu déroulant et cliquez sur le bouton __Enregistrer__.
 +
-image::fig4-1.png[,623,763] 
+image::fig4-1.png[,599,737] 
 +
 Ensuite, nous devons ajouter la Phase "Suivi des Incidents" à chaque Niveau existant.
 Cela est essentiel car toutes les opérations concernant le Suivi des Incidents effectuées par IKAN ALM sont exécutées pendant la Phase "Suivi des Incidents". Si un Niveau n'a pas de Phase "Suivi des Incidents", aucun Incident ne sera associé aux Requêtes de niveau de ce Niveau et aucun commentaire ne sera ajouté aux Incidents!
@@ -222,17 +233,17 @@ Les Niveaux créés après l'association au Système de Suivi des Incidents auro
 
 .. Modifiez le Niveau, soit à partir de l'__Aperçu des Niveaux__, soit à partir de la fenêtre __Aperçu des Cycles de vie__.
 +
-image::fig4-2.png[,946,435] 
+image::fig4-2.png[,1009,408] 
 
 .. Ensuite, cliquez sur le lien image:icons/edit_phases.gif[,15,15] _ Modifier les Phases_ en-dessous de l'__Aperçu des Phases__.
 +
-image::fig4-3.png[,562,453] 
+image::fig4-3.png[,710,420] 
 
 .. Ensuite, cliquez sur le lien __Insérer une Phase__.
 +
 La fenêtre _Insérer une Phase_ s'affiche.
 +
-image::fig4-4.png[,1042,679] 
+image::fig4-4.png[,926,631] 
 
 .. Complétez les champs pour la nouvelle Phase.
 +
@@ -282,7 +293,7 @@ Plus spécifiquement, elle décrit les tâches exécutées par la Phase "Suivi d
 
 Comme déjà indiqué précédemment, toutes les opérations concernant le Suivi des Incidents sont exécutées pendant la Phase "Suivi des Incidents". Les fichiers journaux générés lors de ces opérations peuvent être consultés dans l'interface utilisateur IKAN ALM, sur l'onglet "Journaux de Phase" de la page __Informations détaillées__.
 
-image::fig5-1.png[,927,813] 
+image::fig5-1.png[,7,808] 
 
 Le champ "Dernier message" contient le messages de suivi des opérations exécutées par la Phase "Suivi des Incidents".
 
@@ -350,7 +361,7 @@ La possibilité d'ajouter des commentaires est contrôlée par le champ "Ajouter
 
 Actuellement, les commentaires des Incidents ne sont pas configurables et, en général, ils ressemblent à:
 
-image::fig5-4.png[,772,226] 
+image::fig5-4.png[,760,216] 
 
 Comme vous pouvez le constater, le commentaire d'Incident contient un lien direct vers la Requête de niveau IKAN ALM concernée, ce qui permet aux Utilisateurs d'afficher les détails d'une Construction qui résout cet Incident.
 
@@ -361,7 +372,7 @@ Il se peut que les références d'Incident soient oubliés dans les messages d'e
 
 Heureusement, toutes ces fonctions sont disponibles dans l'Interface utilisateur IKAN ALM sur l'onglet "Incidents" de la page __Informations détaillées__.
 
-image::fig5-5.png[,723,509] 
+image::fig5-5.png[,660,442] 
 
 Pour plus d'informations, se référer au __Guide
 de l'Utilisateur IKAN ALM__.
