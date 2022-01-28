@@ -1,344 +1,350 @@
 // The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
 :imagesdir: ../images
-:description: GitHub Installation How-to (French)
+:description: Installation de GitHub Comment (Français)
 :revnumber: v5.9
-:revdate: 8.11.2021
+:revdate: 28.01.2022
 
-= How To Guide: Integrating GitHub with IKAN ALM
+= Guide pratique pour l'intégration de GitHub avec IKAN ALM
 
 [[_introduction]]
 == Introduction
 
-The IKAN ALM Issue Tracking functionality provides the possibility to link issues from an external issue tracking system to an IKAN ALM Level Request.
+La fonctionnalité de Suivi des Incidents d'IKAN ALM permet de relier des Incidents d'un Système de Suivi des Incidents externe à une Requête de niveau IKAN ALM.
 
-Issues can get linked to a Level Request in the following ways:
+Les Incidents peuvent être reliés à une Requête de niveau de l'une des manières suivantes:
 
-* via an automatic search for handled issues in the comments provided by the developers when committing or checking in sources into the VCR. This automatic search is done in a separate phase during the handling of a Build Level Request, and is based on a regular expression describing the issue tracking number format. Currently, this is only supported for Subversion, Git, Team Foundation and CVS Version Control Repositories.
-* via the enumeration of solved issues when delivering to Test/Production levels enabling easy generation of Release Notes.
-* via manual addition of an issue to a successful Level Request, using the GUI widgets on the _Level Request Detail_ screen.
+* via une recherche automatique d'Incidents traités dans les commentaires fournis par les développeurs lors des processus d'enregistrement (commit) et de chargement (check in) des codes Sources dans le RCV. Cette recherche automatique se fait dans une phase séparée pendant l'exécution d'une Requête de niveau de Construction et se base sur une expression régulière décrivant le format du numéro de l'Incident. Pour le moment, cela n'est supporté que pour les Référentiels de contrôle de version Subversion, Git, Team Foundation et CVS.
+* via l'énumération des Incidents résolus au moment de délivrer vers les Niveaux de Test/Production, facilitant ainsi la génération de Notes de Réalisation.
+* en ajoutant manuellement l'Incident à une Requête de niveau réussie dans l'écran __Informations détaillées__.
 
 
 [NOTE]
 ====
 
-You can only click through from a linked issue in IKAN ALM to the issue in the third-party Issue Tracking tool if the tool offers a web interface.
+Un lien permettant de passer directement de l'Incident dans IKAN ALM vers l'Incident dans l'outil de Suivi des Incidents externe est disponible si l'outil externe dispose d'une interface Web.
 ====
 
-On top of this basic Issue Tracking functionality, IKAN ALM offers a more advanced integration for Atlassian Jira, Microsoft Team Foundation Server (TFS), MicroFocus ALM and GitHub with following additional functionality:
+En plus de cette fonctionnalité de Suivi des Incidents de base, IKAN ALM offre une intégration plus avancée pour Atlassian Jira, Microsoft Team Foundation Server (TFS), MicroFocus ALM et GitHub avec les fonctionnalités additionnelles suivantes:
 
-* possibility to test the connection with the Issue Tracking system at the moment you create or edit an Issue Tracking System definition
-* automatic synchronization of handled issues with the Issue Tracking system: IKAN ALM retrieves additional information, such as a short description, the owner, the priority, ... from the corresponding Jira Issue, TFS Work Item, MF ALM Defect or GitHub Issue. This information is synchronized each time the build result evolves in the IKAN ALM lifecycle.
-* manual synchronization of issues linked to a Level Request on the Issues tab page of the _Level Request Detail_ screen.
-* option to automatically add a comment to the issue/defect/artifact in Jira/TFS/MF ALM/GitHub after a successful Level Request. This comment will contain a link to the IKAN ALM Level Request.
+* la possibilité de tester la connexion avec le Système de Suivi des Incidents au moment de la création ou de la modification d'une définition de Système de Suivi des Incidents.
+* la synchronisation automatique des incidents traités dans le Système de Suivi des Incidents: IKAN ALM récupère des informations additionnelles, telles que la description, le propriétaire, la priorité, ... de l'Incident (Issue) Jira, de l'élément de travail (Work Item) Team Foundation, du Défaut (Defect) MF ALM ou de l'incident (Issue) GitHub correspondant. Ces informations seront synchronisées chaque fois que le résultat de construction évoluera dans le Cycle de vie IKAN ALM.
+* synchronisation manuelle des Incidents associés à une Requête de niveau dans l'onglet "Incidents" de la fenêtre __Informations détaillées__.
+* possibilité d'ajouter automatiquement un commentaire pour un incident/défaut/artefact dans Jira/TFS/MF ALM/GitHub après une Requête de niveau réussie. Ce commentaire contiendra un lien vers la Requête de niveau dans IKAN ALM.
 
+Dans ce document, nous nous concentrerons sur la façon d'effectuer l'intégration de GitHub avec IKAN ALM.
+D'abord, nous décrirons comment il faut configurer GitHub pour qu'IKAN ALM puisse s'y connecter.
+Après, nous expliquerons comment créer un Système de Suivi d'incidents représentant votre système GitHub dans IKAN ALM.
+Ensuite, nous décrirons les étapes à suivre pour activer l'intégration de GitHub dans un Projet IKAN ALM.
+Finalement, nous donnerons des informations de référence sur l'intégration d'IKAN ALM avec des Systèmes de Suivi des Incidents en général.
 
-In this document we will focus on how to set up the GitHub integration of IKAN ALM.
-First, we will describe how to set up GitHub so that IKAN ALM can connect to it.
-Next, we will explain how to create an Issue Tracking System in IKAN ALM that represents your GitHub system.
-After that, we will describe the steps needed to enable GitHub integration in an IKAN ALM Project.
-Finally, we will give some detailed background information about IKAN ALM's integration with Issue Tracking Systems.
 
 [[_github_configurationprerequisites]]
-== GitHub Configuration and Prerequisites
+== Configuration GitHub et prérequis
 
-=== Generate an API Token
+=== Générer un Jeton d'API
 
-GitHub requires an API token to authenticate with the GitHub REST API. To generate this token for GitHub:
+GitHub nécessite un Jeton d'API pour l'authentification avec son REST API. Pour générer un Jeton pour GitHub:
 
-. Go to https://github.com/settings/tokens.
-. Log in as the user you want to use to authenticate with GitHub.
-. Click "Create API token".
+. Allez vers https://github.com/settings/tokens.
+. Connectez-vous avec l'utilisateur que vous voulez utiliser pour l'authentification avec GitHub.
+. Cliquez sur "Créer un Jeton d'API".
 +
 image::fig2-2.png[,759,110]
-. Enter a memorable name, choose an Expiration time, select the "repo" scope and click create.
+. Entrez un nom mémorisable, choissez une date d'expiration, sélectionnez la portée de "référentiel" et cliquez sur le bouton "Créer".
 +
 image::fig2-3.png[,762,613]
-. Copy this token somewhere secure. You will need it later.
+. Copiez ce Jeton dans quelque chose de sécurisé. Vous en aurez besoin plus tard.
 
 [[_creatissuetrackingsystem]]
-== Creating an Issue Tracking System in IKAN ALM
+== Créer un Système de Suivi des Incidents dans IKAN ALM
 
-You must create an Issue Tracking System in IKAN ALM that represents your GitHub system before you can assign and use it in an IKAN ALM Project.
+Dans IKAN ALM, vous devez d'abord créer le Système de Suivi des Incidents qui représente votre système GitHub avant que vous ne puissiez l'assigner et l'utiliser dans un Projet IKAN ALM.
 
-. Log on as an IKAN ALM Administrator, and select __Global Administration > Issue Tracking > Create Issue Tracking System__.
+. Connectez-vous comme Administrateur IKAN ALM et sélectionnez _Administration globale > Suivi des Incidents > Créer un Système de Suivi_ des Incidents.
 +
-The _Create Issue Tracking System_ screen is displayed:
+L'écran _Créer un Système de Suivi des Incidents_ s'affiche:
 +
-image::fig3-1.png[,611,449] 
+image::fig3-1.png[,626,382] 
 +
-. Fill out the fields in the _Create Issue Tracking System_ panel. Fields marked with an asterisk are mandatory.
+. Complétez les champs dans le panneau __Créer un Système de Suivi des Incidents__. Les champs marqués d'un astérisque sont obligatoires.
 +
 
-[cols="1,1", frame="topbot", options="header"]
+[cols="1,2", frame="topbot", options="header"]
 |===
-| Field
+| Champ
 | Description
 
-|Name
-|The name of the Issue Tracking System, like "GitHub"
+|Nom
+|Le nom du Système de Suivi des Incidents, comme par exemple "GitHub_X"
 
-|Plugin Factory Class
-|The fully qualified name of the Java Class that can produce IKAN ALM Issue Tracking System Plugin implementations.
+|Classe «Plugin Factory» 
+|Le nom complet de la Classe Java qui peut produire des implémentations de l'extension de Système de Suivi des Incidents IKAN ALM.
 
-You can select a value from the list or type in your own class name .
+Vous pouvez sélectionner une des valeurs de la liste ou saisir votre propre nom de Classe 
 
-For GitHub, select "be.ikan.scm4all.plugin.issuetracking.github.GitHubITSPluginFactory"
+Pour GitHub, sélectionnez "be.ikan.scm4all.plugin.issuetracking.github.GitHubITSPluginFactory"
 
 |Description
-|A meaningful description, like "GitHub Issue Tracking System for project"
+|Une description significative, comme par exemple "Système de Suivi des Incidents GitHub pour le projet X"
 
 |URL
-|The direct URL to the details of 1 Issue.
-In the URL, the Key of the Issue is represented by the variable ${issueId}.
+|L'URL direct vers les détails d'un seul Incident.
+Dans cet URL, la clé de l'Incident est représentée par la variable ${issueId}.
 
-For GitHub, this URL should take the form of:
-
+Pour GitHub, cet URL devra prendre la forme de:
 https://github.com/ORGANIZATION/REPOSITORY/issues/${issueId}
 
-|User
-|The GitHub user that IKAN ALM will use to connect to GitHub
+ORGANISATION et REPOSITORY dépendent des paramètres de votre Référentiel GitHub.
 
-|Password
-|The password of the GitHub user that IKAN ALM will use to connect to GitHub.
+|Utilisateur
+|L'Utilisateur GitHub utilisé par IKAN ALM pour se connecter à GitHub
 
-This can be left empty since GitHub does not support password based authentication.
+|Mot de passe
+|Le Mot de passe de l'utilisateur GitHub utilisé par IKAN ALM pour se connecter à GitHub
 
-|Issue Pattern and Issue ID Pattern
-a|Both fields should contain a regular expression that IKAN ALM uses to find Issue keys in the VCR commit messages.
-Issue Pattern is the pattern to find a reference to an Issue in the commit text, Issue ID Pattern is the pattern to find the actual Issue ID (or key) inside the matched Issue reference.
+Celui-ci peut être laissé vide puisque GitHub ne supporte plus l'authentification par Mot de passe, désormais.
 
-Since GitHub uses the same format to list issues for all users, the Issue Pattern should always be #[0-9]+ and thee Issue ID Pattern should always be [0-9]+. 
+|Modèle de recherche de Suivi d'Incident
+a|Ce  champ doit contenir une expression régulière qu'IKAN ALM utilisera pour trouver les clés d'incidents dans les messages saisis lors de l'enregistrement dans le RCV.
+Le Modèle de recherche de Suivi d'Incident sert à retrouver une référence vers un Incident dans le texte enregistré.
 
-|Add Comments
-|If you set this to "`Yes`", then IKAN ALM will add a comment to an Issue when it is linked to an IKAN ALM Level Request.
-See later for a more detailed explanation.
+Depuis que GitHub uitlise le même format pour lister les Incidents de tous les utilisateurs, le modèle de recherche d'Incident devra être toujours "#[0-9]+".
+
+|Modèle d'Identifiant de Suivi d'Incident
+a|Ce  champ doit contenir une expression régulière qu'IKAN ALM utilisera pour trouver les clés d'incidents dans les messages saisis lors de l'enregistrement dans le RCV.
+Le Modèle d'Identifiant de Suivi d'Incident sert à retrouver l'identifiant de l'Incident (ou la clé) dans la référence de l'Incident correspondant.
+
+Depuis que GitHub uitlise le même format pour lister les Incidents de tous les utilisateurs, le modèle d'Incident devra être toujours "[0-9]+".
+
+|Ajouter des Commentaires
+|Si vous établissez cette option à "Oui", IKAN ALM ajoutera un commentaire à l'Incident au moment où il est associé à une Requête de niveau IKAN ALM.
+Des explications plus détaillées suivent plus loin dans ce document.
 |===
 
 
-. Once you have filled out the fields, click __Create__.
+. Après avoir complété les champs, cliquez sur le bouton __Créer__.
 +
-You will be redirected to the Edit page for the GitHub Issue Tracking System you just created, and a warning will be displayed at the top of the page:
+Vous serez réorienté vers l'écran de modification du Système de Suivi des Incidents nouvellement créé et un avertissement s'affichera en haut de la fenêtre.
 +
-image::fig3-3.png[,864,434] 
+image::fig3-3.png[,858,444] 
 +
-This warning is displayed because the GitHub Issue Tracking System plugin has two properties that needs to be set: gitHubRESTUrl and gitHubPersonalAccessToken.
-gitHubRESTUrl represents the GitHub REST API URL and is needed by IKAN ALM for its connection with GitHub. gitHubPersonalAccessToken represents the access token generated during GitHub preparation and is needed by IKAN ALM to authenticate to GitHub.
+Cet avertissement s'affiche parce l'extension du Système de Suivi des Incidents GitHub requiert que les propriétés suivantes soient spécifiées: gitHubRESTUrl et gitHubPersonalAccessToken.
+gitHubRESTUrl représente l'URL de l'API GitHub REST et IKAN ALM en a besoin pour établir la connexion avec GitHub. gitHubPersonalAccessToken représente le Jeton d'accès généré durant la préparation de GitHub et est nécessaire pour établir la connexion avec GitHub.
 
-. Next, click the image:icons/icon_createparameter.png[,15,15]  Create link next to the gitHubRESTUrl property.
-+
-. Specify the value for the REST API URL.
-+
-image::fig3-4.png[,570,240] 
-+
-The valid value for this endpoint is always of the format https://api.github.com/repos/${ORGANIZATION}/${REPOSITORY}, with ORGANIZATION and REPOSITORY depending on the setup of the GitHub repository.
+. Ensuite, cliquez sur le lien image:icons/icon_createparameter.png[,15,15]  "Créer", le lien à côté de la proprièté gitHubRESTUrl.
 
-. Click _Create_ to confirm the creation of the Property and close the dialog.
-
-. repeat steps 4 through 6 for the gitHubPersonalAccessToken property, using the Personal Access Token generated during GitHub preparation.
-
-. The warning about the missing values should now have disappeared.
+. Spécifiez la valeur de l'URL de l'API REST de GitHub.
 +
-image::fig3-5.png[,1158,554] 
-
-
-. Test whether IKAN ALM can connect with GitHub by clicking the _Test Connection_ button.
+image::fig3-4.png[,577,235] 
 +
-If the test is not successful, correct the errors reported in the Stack Trace field and perform the test again.
+La valeur valide de ce point d'accès est toujours du format: https://api.github.com/repos/${ORGANISATION}/${REPOSITORY}, avec ORGANISATION et REPOSITORY qui dépendent des paramètres de votre Référentiel GitHub.
+
+. Cliquez sur le bouton _Créer_ pour confirmer la création de la Propriété et fermer le dialogue.
+
+. Répétez les étapes 4 à 6 pour la propriété gitHubPersonalAccessToken, en utilisant le Jeton d'Accès Personnel généré pendant la préparation de GitHub.
+
+. Le message d'alerte au sujet des valeurs manquantes doit avoir disparu maintenant.
 +
-Now that we have defined a GitHub Issue Tracking System, we can start using it in our IKAN ALM Projects.
+image::fig3-5.png[,648,399] 
 
 
-For that we need to link the Issue Tracking System to a Project.
+. Testez si IKAN ALM peut se connecter avec votre système GitHub en cliquant sur le bouton __Vérifier la connexion__.
++
+Si le test échoue, corrigez les erreurs spécifiées dans la trace de pile et refaites le test.
++
+Le Système de Suivi des Incidents GitHub étant défini, nous pouvons l'utiliser dans nos Projets IKAN ALM.
+
+Pour cela, nous devons associer le Système de Suivi des Incidents à un Projet.
 
 [[_linkissuetrackingsystem]]
-== Linking an Issue Tracking System to a Project
+== Associer un Système de Suivi des Incidents à un Projet
 
-. Log on as an IKAN ALM user that has administrator access to the Project to be linked.
+. Connectez-vous comme un Utilisateur IKAN ALM avec des droits d'accès d'Administrateur sur le Projet que vous voulez y associer.
 
-. Go to _Project Administration_ and select the Project from the __Projects Overview__.
+. Naviguez vers _Administration des projets_ et sélectionnez le Projet approprié dans l'__Aperçu des Projets__.
 
-. Underneath the _Project Info_ panel, click the _Edit_ button.
+. En-dessous du panneau __Infos Projet:__, cliquez sur le bouton __Modifier__.
 
-. Select the created Issue Tracking System from the "`Issue Tracking System`" drop-down box and click the _Save_ button.
+. Dans le champ "Système de Suivi des Incidents", sélectionnez le Système de Suivi des Incidents créé à partir du menu déroulant et cliquez sur le bouton __Enregistrer__.
 +
-image::fig4-1.png[,455,578] 
+image::fig4-1.png[,472,493] 
 +
-Next, we need to add an "Issue Tracking Phase" to each existing Level.
-This is crucial, because all Issue Tracking related operations performed by IKAN ALM are executed during this Issue Tracking Phase.
-If a Level has no Issue Tracking Phase, then no issues are linked to Level Requests of that Level, and no comments are added to the issues!
+Ensuite, nous devons ajouter la Phase "Suivi des Incidents" à chaque Niveau existant.
+Cela est essentiel car toutes les opérations concernant le Suivi des Incidents effectuées par IKAN ALM sont exécutées pendant la Phase "Suivi des Incidents". 
+Si un Niveau n'a pas de Phase "Suivi des Incidents", aucun Incident ne sera associé aux Requêtes de niveau de ce Niveau et aucun commentaire ne sera ajouté aux Incidents!
 
-. For each existing Level in the Project, you must do the following:
+. Pour chaque Niveau existant dans le Projet, vous devez effectuer ce qui suit:
 +
 [NOTE]
 ====
-We only need to perform this procedure for Levels created before the Project was linked to an Issue tracking System.
-Levels created after an Issue Tracking System has been linked will get the Issue Tracking Phase by default! 
+Nous ne devons exécuter cette procédure que pour les Niveaux créés avant l'association du Projet au Système de Suivi des Incidents.
+Les Niveaux créés après l'association au Système de Suivi des Incidents auront par défaut une Phase "Suivi des Incidents". 
 ====
 +
-.. Edit the Level, either from the _Levels Overview_ or from the _Lifecycles Overview_ page.
+.. Modifiez le Niveau, soit à partir de l'__Aperçu des Niveaux__, soit à partir de la fenêtre __Aperçu des Cycles de vie__.
 +
-image::fig4-2.png[,936,418] 
+image::fig4-2.png[,1009,408] 
 +
-.. Next, click the image:icons/edit_phases.gif[,15,15] _Edit Phases_ link underneath the __Phases Overview__.
+.. Ensuite, cliquez sur le lien image:icons/edit_phases.gif[,15,15] _Modifier les Phases_ en-dessous de l'__Aperçu des Phases__.
 +
-image::fig4-3.png[,628,470] 
+image::fig4-3.png[,710,420] 
 +
-.. Next, click the _Insert Phase_ link.
+.. Ensuite, cliquez sur le lien __Insérer une Phase__.
 +
-The __Insert Phase __screen is displayed.
+La fenêtre _Insérer une Phase_ s'affiche.
 +
-image::fig4-4.png[,1032,704] 
-.. Fill out the fields for the new Phase.
+image::fig4-4.png[,926,631] 
+.. Complétez les champs pour la nouvelle Phase.
 +
-The following fields are available:
+Les champs suivants sont disponibles:
 +
 
-[cols="1,1", frame="topbot", options="header"]
+[cols="1,2", frame="topbot", options="header"]
 |===
-| Field
-| Meaning
+| Champ
+| Description
 
 |Phase
-|From the _Available
-Phases_ panel, select the Level Phase to add.
+|Sélectionnez, à partir du panneau __Phases disponibles__, la Phase de niveau à ajouter.
 
-|Fail on Error
-|In this field, indicate whether the Level Request is considered failed when this Phase goes in Error.
+|Abandon si erreur
+|Dans ce champ, indiquez si la Requête de niveau doit être considérée comme étant échouée si la Phase rencontre une erreur.
 
-|Insert at Position
-|This field indicates at which position the Phase will be inserted into the Level workflow.
-The Phase Position is also indicated on the _Phases Overview_ panel.
-It is a good practice to insert the _Issue Tracking_ Phase before the _Cleanup Work Copy_ Phase.
+|Insérer à la position
+|Ce champ indique la position dans le flux de travail du Niveau à laquelle la Phase sera insérée.
+La position de la Phase est également affichée dans le panneau __Aperçu des Phases__.
+Une bonne pratique consiste à insérer la Phase _Suivi des Incidents_ avant la Phase __Nettoyage Copies de travail__.
 
-|Next Phase On Error
-|This field indicates the next Phase to execute in case this Phase goes in Error.
-It is recommended to select the _Cleanup Work Copy_ Phase.
+|Phase suivante si erreur
+|Ce champ indique la Phase suivante à exécuter si la Phase rencontre une erreur.
+Il est recommandé de sélectionner la Phase __Nettoyage Copies de travail__.
 
-|Label
-|In this field you can add a Label for the Phase to be inserted.
+|Libellé
+|Dans ce champ vous pouvez saisir un libellé pour la Phase à insérer.
 
-In case you use the same Phase several times, adding a label is useful to provide additional information concerning the usage of the Phase.
+Si vous utilisez la même Phase plusieurs fois, il est utile d'ajouter un libellé pour donner des informations additionnelles concernant l'usage de la Phase.
 |===
 
-.. Click _Insert_ to confirm the creation of the new Phase.
+.. Cliquez sur le bouton _Insérer_ pour confirmer la création de la nouvelle Phase.
 
 
 [[_integration]]
-== Integrating an External Issue Tracking System 
+== Intégrer un Système de Suivi des Incidents externe 
 
-This section provides detailed information on how IKAN ALM integrates with an external Issue Tracking system.
-More specifically, it describes what tasks are performed by the IKAN ALM Issue Tracking Phase that is executed during a Level Request.
+Cette section contient des informations détaillées sur l'intégration d'IKAN ALM avec un Système de Suivi des Incidents externe.
+Plus spécifiquement, elle décrit les tâches exécutées par la Phase "Suivi des Incidents" IKAN ALM qui est exécutée pendant une Requête de niveau.
 
-=== Issue Tracking Phase log
+=== Journal de la Phase Suivi des Incidents
 
-As said before, all Issue Tracking related operations are performed during the Issue Tracking Phase.
-The logs produced by these operations can be consulted in the IKAN ALM user interface, on the Phase Logs tab of the _Level Request Detail_ page:
+Comme déjà indiqué précédemment, toutes les opérations concernant le Suivi des Incidents sont exécutées pendant la Phase "Suivi des Incidents". 
+Les fichiers journaux générés lors de ces opérations peuvent être consultés dans l'Interface Utilisateur IKAN ALM, sur l'onglet "Journaux de Phase" de la page __Informations détaillées__.
 
-image::fig5-1.png[,1210,929] 
+image::fig5-1.png[,960,760] 
 
-The "Message" field contains the log messages of the operations performed by the Issue Tracking Phase.
+Le champ "Dernier message" contient le messages de suivi des opérations exécutées par la Phase "Suivi des Incidents".
 
-=== Build Level Requests
+=== Requêtes de niveau de Construction
 
-A Build Level Request is a Level Request of a Build Level.
-A Build Level Request will typically retrieve the latest source code from the VCR (Version Control Repository), build it, and then label it in the VCR for later reference.
+Une Requête de niveau de Construction est une Requête de niveau d'un Niveau de Construction.
+Typiquement, une Requête de niveau de Construction récupérera le dernier Code Source du RCV (Référentiel de Contrôle de Version), le construira et y ajoutera un libellé dans le RCV pour des références ultérieures.
 
-The Issue Tracking Phase in a Build Level Request performs the following operations:
+La Phase "Suivi des Incidents" dans une Requête de niveau de Construction exécute les opérations suivantes:
 
-* parse the VCR commit messages and find references to issues,
-* link the identified issues to the Level Request,
-* synchronize the data of the linked issues with the most recent information present in GitHub
-
-
-First, the messages are retrieved from commits performed since the latest successful Level Request.
-In these messages, Issue IDs (Keys) are searched for using the patterns defined in the Issue Tracking System (Issue Pattern and Issue ID Pattern fields). The pattern-matching is case-insensitive. 
-
-From the found issues, duplicates are removed, and they are linked with the current Level Request.
-
-Finally, IKAN ALM tries to match the issue in the GitHub repository.
-If the issue is found, the description, status, owner, owner and priority is retrieved from GitHub, and this information is stored in the IKAN ALM representation of the Issue.
-
-=== Deliver, Re-deliver and Rollback Level Requests
-
-When you create a Level Request for a Test or Production Level, in IKAN ALM terminology that means you "`Deliver`" to that Test or Production Level.
-The "`Current Active Build`" of a Level is the last successfully delivered Build on that Level. 
-
-We speak of a "`Deliver Level Request`" when you Deliver a Build with a build number that is higher than the Current Active Build on that Level. 
-
-We speak of a "`Re-deliver Level Request`" when you Deliver a Build with a build number that is the same than the Current Active Build on that Level. 
-
-We speak of a "`Rollback Level Request`" when you Deliver a Build with a build number that is lower than the Current Active Build on that Level. 
-
-The Issue Tracking Phase in a Deliver Level Request performs the following operations:
-
-* Find the Issues that were linked to Build Level Requests executed since the last successful Deliver Level Request
-* Link the Issues from all these Build Level Request to the current Deliver Level Request, eliminating duplicates
-* synchronize the data of the linked issues with the most recent information present in GitHub
+* analyser les messages d'enregistrement dans le RCV et trouver les références aux Incidents,
+* créer un lien entre les Incidents identifiés et la Requête de niveau,
+* synchroniser les données des Incidents associés avec les informations les plus récentes dans GitHub.
 
 
-For a Re-deliver or a Rollback Level Request there always exists a previous Deliver Level Request.
-Instead of enumerating through all Build Level Requests, the Issues are copied from the previous Deliver Level Request, and finally their data synchronized with the most recent information present in GitHub.
+Tout d'abord, les messages sont récupérés à partir des enregistrements effectués depuis la dernière Requête de niveau réussie.
+Dans ces messages, les identifiants (les clés) des Incidents sont cherchés en utilisant les modèles définis dans le Système de Suivi d'incidents (les champs Modèle de recherche de Suivi d'Incident et Modèle d'Identifiant de Suivi d'Incident). La reconnaissance des correspondances ne tient pas compte de la casse. 
 
-It is important to understand that in Deliver, Re-deliver and Rollback Level Requests issues are always linked by "`copying`" them from other Level Requests, either from Build Level Requests or other Deliver Level Requests.
-Issues are never parsed from the commit messages when running Deliver, Re-deliver or Rollback Level Requests!
+Les doubles parmi les incidents trouvés sont retirés et ils sont associés à la Requête de niveau actuelle.
 
-An example may help to clarify things.
+Finalement, IKAN ALM essaie de trouver la correspondance de l'Incident dans le référentiel GitHub.
+Si l'Incident est trouvé, la description, le statut, le propriétaire et la priorité sont récupérés à partir de GitHub, et cette information est sauvegardée dans la représentation de l'Incident dans IKAN ALM.
 
-Suppose the following set of chronological Level Requests (LR):
+=== Requêtes de niveau pour délivrer, re-délivrer et restaurer
 
-. Build LR producing Build 1: issue1 is parsed from the VCR comments
-. Build LR producing Build 2: issue 2 is parsed from the VCR comments
-. Deliver LR, delivering Build 2: issue1 and issue2 are linked (from the 2 previous Build Level Requests)
-. Build LR producing Build 3: issue 3 is parsed from the VCR comments
-. Build LR producing Build 4: issue 4 is parsed from the VCR comments
-. Deliver LR, delivering Build 4: issue3 and issue4 are linked (from the 2 previous Build Level Requests)
-. Re-Deliver LR (re-delivers Build 4): issue3 and issue4 are linked (copied from the Deliver Level Request that delivered Build 4)
-. Rollback LR rolls back to Build 2: issue1 and issue2 are linked (copied from the Deliver Level Request that delivered Build 2)
+Si vous créez une Requête de niveau pour un Niveau de Test ou de Production, cela signifie, en termes IKAN ALM, que vous "`délivrez`" vers un Niveau de Test ou de Production.
+La "`Construction active actuelle`" d'un Niveau est la dernière Construction délivrée réussie sur ce Niveau. 
+
+Nous parlons d'une "`Requête de niveau pour délivrer une Construction`" si vous délivrez une Construction dont le numéro de construction est supérieur à celui de la Construction active actuelle sur ce Niveau. 
+
+Nous parlons d'une "`Requête de niveau pour re-délivrer une Construction`" si vous délivrez une Construction dont le numéro de construction est égal à celui de la Construction active actuelle sur ce Niveau. 
+
+Nous parlons d'une "`Requête de niveau pour restaurer une Construction`" si vous délivrez une Construction dont le numéro de construction est inférieur à celui de la Construction active actuelle sur ce Niveau. 
+
+La Phase "Suivi des Incidents" dans une Requête de niveau pour délivrer une Construction exécute les opérations suivantes: 
+
+* Trouver les Incidents associés aux Requêtes de niveau de Construction exécutées depuis la dernière Requête de niveau pour délivrer une Construction
+* Créer un lien entre toutes ces Requêtes de niveau de Construction vers la Requête de niveau pour délivrer une Construction actuelle, en éliminant les doubles
+* Synchroniser les données des Incidents associés avec les informations les plus récentes dans GitHub.
 
 
-=== Add Comments
+En cas d'une Requête de niveau pour re-délivrer ou restaurer une Construction, il existe toujours une Requête de niveau pour délivrer une Construction précédente.
+Au lieu d'énumérer toutes les Requêtes de niveau de Construction, les Incidents sont copiés à partir de la Requête de niveau pour délivrer une Construction précédente, et, finalement, leurs données sont synchronisées avec l'information la plus récente disponible dans GitHub.
 
-Apart from retrieving information from GitHub and linking it in IKAN ALM, information about IKAN ALM Level Requests is also sent to GitHub, in the form of comments to GitHub Issues.
-Whether comments are added or not is controlled by the "Add Comments" field of the IKAN ALM Issue Tracking System.
+Il est important de comprendre que pour les Requêtes de niveau pour délivrer, re-délivrer et restaurer une Construction, les Incidents sont toujours associés en les "copiant" d'autres Requêtes de niveau, soit des Requêtes de niveau de Construction, soit d'autres Requêtes de niveau pour délivrer une Construction.
+Les Incidents ne sont jamais analysés sur la base des messages d'enregistrement pendant l'exécution de Requêtes de niveau pour délivrer, re-délivrer ou restaurer une Construction.
 
-The issue comments are currently not configurable, and look generally like this:
+Un exemple pourrait clarifier les choses.
+Supposons l'ensemble de Requêtes de niveau (RN) chronologique suivant:
+
+. RN de Construction produisant la Construction 1: Incident 1 est analysé sur la base des commentaires dans le RCV
+. RN de Construction produisant la Construction 2: Incident 2 est analysé sur la base des commentaires dans le RCV
+. RN pour délivrer, délivrant la Construction 2: Incident 1 et Incident 2 sont associés (à partir des 2 Requêtes de niveau de Construction précédentes)
+. RN de Construction produisant la Construction 3: Incident 3 est analysé sur la base des commentaires dans le RCV
+. RN de Construction produisant la Construction 4: Incident 4 est analysé sur la base des commentaires dans le RCV
+. RN pour délivrer, délivrant la Construction 4: Incident 3 et Incident 4 sont associés (à partir des 2 Requêtes de niveau de Construction précédentes)
+. RN pour re-délivrer (la Construction 4): Incident 3 et Incident 4 sont associés (copiés de la Requête de niveau pour délivrer qui a délivré la Construction 4)
+. RN pour restaurer la Construction 2: Incident 1 et Incident 2 sont associés (copiés de la Requête de niveau pour délivrer qui a délivré la Construction 2)
+
+
+=== Ajouter des Commentaires
+
+Outre la récupération de l'information à partir de GitHub et l'intégration dans IKAN ALM, l'information sur les Requêtes de niveau IKAN ALM est également intégrée dans GitHub sous forme de commentaires aux Incidents GitHub.
+La possibilité d'ajouter des commentaires est contrôlée par le champ "Ajouter des Commentaires" dans la définition du Système de Suivi des Incidents IKAN ALM.
+
+Actuellement, les commentaires des Incidents ne sont pas configurables et, en général, ils ressemblent à:
 
 image::fig5-4.png[,928,186] 
 
-As you can see, the Issue comment contains a direct link to the related IKAN ALM Level Request, making it easy for users to see the details of a Build that addresses the Issue.
+Comme vous pouvez le constater, le commentaire d'Incident contient un lien direct vers la Requête de niveau IKAN ALM concernée, ce qui permet aux Utilisateurs d'afficher les détails d'une Construction qui résout cet Incident.
 
-=== Manual Editing and Synchronization of Issues
+=== Modification et synchronisation manuelle des Incidents
 
-Automatic linking and synchronization of Issues is only as good as the quality of the matching patterns and the quality of the commit messages.
-Sometimes issue references are forgotten in commit messages, not all issue IDs parsed from the messages, or invalid issue IDs parsed (false positives). In these cases it may be needed to manually add, edit, delete and/or synchronize Issues.
+La qualité des liens créés et de la synchronisation dépend de la qualité des modèles de correspondance et de la qualité des messages d'enregistrement.
+Il se peut que les références d'Incident soient oubliés dans les messages d'enregistrement, que tous les identifiants d'Incident ne soient pas analysés ou que des identifiants d'Incident non valides soient analysés (faux résultats positifs). Dans ces cas, il peut être nécessaire d'ajouter, modifier, supprimer et/ou synchroniser les Incidents manuellement.
 
-Luckily, all these functions are available in the IKAN ALM user interface, on the Issues tab page of the _Level Request
-Detail_ page.
+Heureusement, toutes ces fonctions sont disponibles dans l'Interface Utilisateur IKAN ALM sur l'onglet "Incidents" de la page __Informations détaillées__.
 
+image::fig5-5.png[,696,451] 
 
-image::fig5-5.png[,691,492] 
-
-For more detailed information, refer to the __IKAN ALM User Guide__.
+Pour plus d'informations, se référer au __Guide de l'Utilisateur IKAN ALM__.
 
 
 [[_troubleshooting]]
-== Troubleshooting
+== Résolution des problèmes
 
-Generally, you should use the "Test Connection" button on the "`Edit Issue Tracking System`" page.
-Examine the errors reported in the Message and Stack Trace fields, they should contain helpful information.
-The other problems mentioned here assume the "Test Connection" did not report any errors.
+En général, vous devez utiliser le bouton "Vérifier la connexion" dans la fenêtre "`Modifier un Système de Suivi des Incidents`". 
+Vérifiez les erreurs rapportées dans les champs "Message" et "Trace de la pile". Ils devraient contenir de l'information utile.
 
-=== No Issues are added to the Level Request
+Les autres problèmes mentionnés supposent que la "vérification de la connexion" n'a pas rapporté d'erreurs.
 
-Issues are expected to have been linked to the Level Request, but the _Issues_ page on the _Level
-Request Detail_ screen does not show them.
+=== Aucun Incident n'est associé à la Requête de niveau
 
-Possible causes:
+Des Incidents devraient être associés à la Requête de niveau, mais l'onglet _Incidents_ de la page _Informations détaillées_ n'en affiche pas.
 
-* The Level of the Request doesn't have the Issue Tracking Phase added.
-Is the Issue Tracking Phase displayed on the _Phase
-Logs_ page of the Level Request Detail screen? If not, edit the phases of the Level and add the Issue Tracking Phase. <<_linkissuetrackingsystem>>
-* The Issue Tracking Phase failed.
-Check the Issue Tracking Phase log for errors.
-* The Issue Tracking Phase succeeded, but no issues were parsed.
-Check the log, it should mention the patterns used, the VCR tags it used to search for commit messages, and the issues it detected.
+Causes possibles:
+
+* La Phase "Suivi des Incidents" n'a pas été ajoutée au Niveau pour la Requête de niveau.
++
+Vérifiez si la Phase "Suivi des Incidents" est affichée sur la page _Journaux de Phase_ de la fenêtre "Informations détaillées"? Si cela n'est pas le cas, modifiez les Phases du Niveau et ajoutez la Phase "Suivi des Incidents" (<<_linkissuetrackingsystem>>).
+
+* La Phase "Suivi des Incidents" a échoué.
++
+Vérifiez les erreurs dans le journal de la Phase "Suivi des Incidents".
+
+* La Phase "Suivi des Incidents" a réussi, mais aucun Incident n'est traité.
++
+Vérifiez le journal. Il devrait mentionner les modèles utilisés, les balises RCV utilisées pour chercher les messages d'enregistrement (commit) et les Incidents trouvés.
