@@ -61,7 +61,7 @@ image::fig2-1.png[,349,269]
 
 Jira Cloud requires an API token to authenticate with the Jira REST API. To generate this token for Jira Cloud:
 
-. Go to https://id.atlassian.com/manage-profile/security/api-tokens.
+. Go to https://id.atlassian.com/manage-profile/security/api-tokens[https://id.atlassian.com/manage-profile/security/api-tokens,window=_blank].
 . Log in as the user you want to use to authenticate with Jira Cloud.
 . Click "Create API token".
 +
@@ -120,7 +120,7 @@ image::fig3-1.png[,615,445]
 
 You can select a value from the list or type in your own class name (<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Mapping a Jira System to an IKAN ALM Issue Tracking System>>).
 
-For Jira, select "be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory"
+For Jira, select __"be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory"__
 
 |Description
 |A meaningful description, like "Jira Issue Tracking System on server X"
@@ -133,11 +133,11 @@ The value depends on settings in your Jira system and also on the strategy that 
 
 Here are some example values:
 
-http(s)://<host>:<port>/jira/browse/${issueId}
+`http(s)://<host>:<port>/jira/browse/${issueId}`
 
-http(s)://<host>:<port>/browse/${issueId}
+`http(s)://<host>:<port>/browse/${issueId}`
 
-http(s)://<host>:<port>/browse/PROJECTKEY-${issueId}
+`http(s)://<host>:<port>/browse/PROJECTKEY-${issueId}`
 
 |User
 |The Jira user that IKAN ALM will use to connect to Jira
@@ -152,13 +152,20 @@ Usually, the distinction between the patterns is not made and both have the same
 
 Some examples:
 
-* Both patterns set to "[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+" (Recommended): an Issue reference is represented as 2 or more capital letters or digits, followed by a dash (-), followed by 1 or more letters. The ID (or key) of an Issue is the whole of this reference. Example matches: ABC-123, AD-1, PROJECT1-1452
+* Both patterns set to `[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+` (Recommended): an Issue reference is represented as 2 or more capital letters or digits, followed by a dash (-), followed by 1 or more letters. The ID (or key) of an Issue is the whole of this reference. Example matches: `ABC-123, AD-1, PROJECT1-1452`
 
-* Both patterns set to "PROJKEY-[0-9]+": an Issue reference is represented as the String "PROJKEY", followed by a dash (-), followed by 1 or more letters. The ID (or key) of an Issue is the whole of this reference. Example matches: PROJKEY-1, PROJKEY-135. As you see, only Issues for the Jira Project "PROJKEY" are matched.
+* Both patterns set to `PROJKEY-[0-9]+`: an Issue reference is represented as the String `PROJKEY`, followed by a dash (-), followed by 1 or more letters. The ID (or key) of an Issue is the whole of this reference. Example matches: `PROJKEY-1, PROJKEY-135`. As you see, only Issues for the Jira Project "PROJKEY" are matched.
 
 // Comment: Used backslashes for the special characters, asterisk, plus...
 * ADVANCED: Issue Pattern set to 
-"Issues:([0-9A-Z][0-9A-Z][0-9A-Z]\*-[0-9]\+)(,[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+)\*" and Issue ID Pattern set to "[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+": an Issue reference is represented as the String "Issues:", followed by a comma-separated list of Issue IDs. The ID of an Issue is represented as 2 or more capital letters or digits, followed by a dash (-), followed by 1 or more letters. So, given the following commit message: "`I fixed the following Issues:WEB-1,WEB-2,WEB3`", the matched Issue reference is "`Issues:WEB-1,WEB-2,WEB3`", and the matched IDs of the Issues are WEB-1, WEB-2, and WEB-3
++
+`Issues:([0-9A-Z][0-9A-Z][0-9A-Z]\*-[0-9]\+)(,[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+)\*` 
++
+and Issue ID Pattern set to 
++
+`[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+`: an Issue reference is represented as the String "Issues:", followed by a comma-separated list of Issue IDs. 
++
+The ID of an Issue is represented as 2 or more capital letters or digits, followed by a dash (-), followed by 1 or more letters. So, given the following commit message: "`I fixed the following Issues:WEB-1,WEB-2,WEB3`", the matched Issue reference is "`Issues:WEB-1,WEB-2,WEB3`", and the matched IDs of the Issues are WEB-1, WEB-2, and WEB-3
 
 |Add Comments
 |If you set this to "`Yes`", then IKAN ALM will add a Jira comment to an Issue when it is linked to an IKAN ALM Level Request.
@@ -185,8 +192,8 @@ Valid values depend on the settings in your Jira system, and are closely related
 +
 Some example values:
 
-* http://<host>:<port>/jira/rest
-* https://<host>:<port>/rest
+* \http://<host>:<port>/jira/rest
+* \https://<host>:<port>/rest
 
 . Click _Create_ to confirm the creation of the Property and close the dialog.
 

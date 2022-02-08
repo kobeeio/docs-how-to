@@ -45,7 +45,7 @@ Finalement, nous donnerons des informations de référence sur l'intégration d'
 
 GitHub nécessite un Jeton d'API pour l'authentification avec son REST API. Pour générer un Jeton pour GitHub:
 
-. Allez vers https://github.com/settings/tokens.
+. Allez vers  https://github.com/settings/tokens[https://github.com/settings/tokens,window=_blank].
 . Connectez-vous avec l'utilisateur que vous voulez utiliser pour l'authentification avec GitHub.
 . Cliquez sur "Créer un Jeton d'API".
 +
@@ -82,7 +82,7 @@ image::fig3-1.png[,626,382]
 
 Vous pouvez sélectionner une des valeurs de la liste ou saisir votre propre nom de Classe 
 
-Pour GitHub, sélectionnez "be.ikan.scm4all.plugin.issuetracking.github.GitHubITSPluginFactory"
+Pour GitHub, sélectionnez __"be.ikan.scm4all.plugin.issuetracking.github.GitHubITSPluginFactory"__
 
 |Description
 |Une description significative, comme par exemple "Système de Suivi des Incidents GitHub pour le projet X"
@@ -92,7 +92,7 @@ Pour GitHub, sélectionnez "be.ikan.scm4all.plugin.issuetracking.github.GitHubIT
 Dans cet URL, la clé de l'Incident est représentée par la variable ${issueId}.
 
 Pour GitHub, cet URL devra prendre la forme de:
-https://github.com/ORGANIZATION/REPOSITORY/issues/${issueId}
+`\https://github.com/ORGANIZATION/REPOSITORY/issues/${issueId}`
 
 ORGANISATION et REPOSITORY dépendent des paramètres de votre Référentiel GitHub.
 
@@ -114,7 +114,7 @@ Depuis que GitHub uitlise le même format pour lister les Incidents de tous les 
 a|Ce  champ doit contenir une expression régulière qu'IKAN ALM utilisera pour trouver les clés d'incidents dans les messages saisis lors de l'enregistrement dans le RCV.
 Le Modèle d'Identifiant de Suivi d'Incident sert à retrouver l'identifiant de l'Incident (ou la clé) dans la référence de l'Incident correspondant.
 
-Depuis que GitHub uitlise le même format pour lister les Incidents de tous les utilisateurs, le modèle d'Incident devra être toujours "[0-9]+".
+Depuis que GitHub uitlise le même format pour lister les Incidents de tous les utilisateurs, le modèle d'Incident devra être toujours `[0-9]+`.
 
 |Ajouter des Commentaires
 |Si vous établissez cette option à "Oui", IKAN ALM ajoutera un commentaire à l'Incident au moment où il est associé à une Requête de niveau IKAN ALM.
@@ -137,7 +137,7 @@ gitHubRESTUrl représente l'URL de l'API GitHub REST et IKAN ALM en a besoin pou
 +
 image::fig3-4.png[,577,235] 
 +
-La valeur valide de ce point d'accès est toujours du format: https://api.github.com/repos/${ORGANISATION}/${REPOSITORY}, avec ORGANISATION et REPOSITORY qui dépendent des paramètres de votre Référentiel GitHub.
+La valeur valide de ce point d'accès est toujours du format: `\https://api.github.com/repos/${ORGANISATION}/${REPOSITORY}`, avec ORGANISATION et REPOSITORY qui dépendent des paramètres de votre Référentiel GitHub.
 
 . Cliquez sur le bouton _Créer_ pour confirmer la création de la Propriété et fermer le dialogue.
 

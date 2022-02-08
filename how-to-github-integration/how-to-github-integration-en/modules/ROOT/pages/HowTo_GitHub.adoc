@@ -45,7 +45,7 @@ Finally, we will give some detailed background information about IKAN ALM's inte
 
 GitHub requires an API token to authenticate with the GitHub REST API. To generate this token for GitHub:
 
-. Go to https://github.com/settings/tokens.
+. Go to https://github.com/settings/tokens[https://github.com/settings/tokens,window=_blank].
 . Log in as the user you want to use to authenticate with GitHub.
 . Click "Create API token".
 +
@@ -82,7 +82,7 @@ image::fig3-1.png[,611,449]
 
 You can select a value from the list or type in your own class name .
 
-For GitHub, select "be.ikan.scm4all.plugin.issuetracking.github.GitHubITSPluginFactory"
+For GitHub, select __"be.ikan.scm4all.plugin.issuetracking.github.GitHubITSPluginFactory"__
 
 |Description
 |A meaningful description, like "GitHub Issue Tracking System for project"
@@ -93,7 +93,7 @@ In the URL, the Key of the Issue is represented by the variable ${issueId}.
 
 For GitHub, this URL should take the form of:
 
-https://github.com/ORGANIZATION/REPOSITORY/issues/${issueId}
+`\https://github.com/ORGANIZATION/REPOSITORY/issues/${issueId}`
 
 |User
 |The GitHub user that IKAN ALM will use to connect to GitHub
@@ -107,7 +107,7 @@ This can be left empty since GitHub does not support password based authenticati
 a|Both fields should contain a regular expression that IKAN ALM uses to find Issue keys in the VCR commit messages.
 Issue Pattern is the pattern to find a reference to an Issue in the commit text, Issue ID Pattern is the pattern to find the actual Issue ID (or key) inside the matched Issue reference.
 
-Since GitHub uses the same format to list issues for all users, the Issue Pattern should always be #[0-9]+ and thee Issue ID Pattern should always be [0-9]+. 
+Since GitHub uses the same format to list issues for all users, the Issue Pattern should always be `#[0-9]+` and thee Issue ID Pattern should always be `[0-9]+`. 
 
 |Add Comments
 |If you set this to "`Yes`", then IKAN ALM will add a comment to an Issue when it is linked to an IKAN ALM Level Request.
@@ -130,7 +130,7 @@ gitHubRESTUrl represents the GitHub REST API URL and is needed by IKAN ALM for i
 +
 image::fig3-4.png[,570,240] 
 +
-The valid value for this endpoint is always of the format https://api.github.com/repos/${ORGANIZATION}/${REPOSITORY}, with ORGANIZATION and REPOSITORY depending on the setup of the GitHub repository.
+The valid value for this endpoint is always of the format `\https://api.github.com/repos/${ORGANIZATION}/${REPOSITORY}`, with ORGANIZATION and REPOSITORY depending on the setup of the GitHub repository.
 
 . Click _Create_ to confirm the creation of the Property and close the dialog.
 

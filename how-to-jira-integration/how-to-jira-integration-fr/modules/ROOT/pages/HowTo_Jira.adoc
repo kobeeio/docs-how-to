@@ -60,7 +60,7 @@ image::fig2-1.png[,351,271]
 
 Le Cloud Jira requiet un Jeton d'API pour s'authentifier avec le REST API Jira. Pour générer ce Jeton pour le Cloud Jira:
 
-. Allez vers https://id.atlassian.com/manage-profile/security/api-tokens.
+. Allez vers https://id.atlassian.com/manage-profile/security/api-tokens[https://id.atlassian.com/manage-profile/security/api-tokens,window=_blank].
 . Connectez-vous avec l'utilisateur que vous voulez utiliser pour l'authentification avec le Cloud Jira.
 . Cliquez sur "Créer un Jeton d'API".
 +
@@ -134,11 +134,11 @@ Cette valeur dépend des paramètres spécifiés dans votre système Jira ainsi 
 
 Voici quelques exemples de valeurs:
 
-http(s)://<host>:<port>/jira/browse/${issueId}
+`http(s)://<host>:<port>/jira/browse/${issueId}`
 
-http(s)://<host>:<port>/browse/${issueId}
+`http(s)://<host>:<port>/browse/${issueId}`
 
-http(s)://<host>:<port>/browse/PROJECTKEY-${issueId}
+`http(s)://<host>:<port>/browse/PROJECTKEY-${issueId}`
 
 |Utilisateur
 |L'Utilisateur Jira utilisé par IKAN ALM pour se connecter à Jira
@@ -154,12 +154,20 @@ En général, on ne fait pas de distinction entre les deux modèles et les deux 
 
 Quelques exemples:
 
-* Les deux modèles sont spécifiés comme "[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+" (recommandé): une référence d'Incident est composée de minimum 2 lettres en majuscules ou 2 chiffres, suivis d'un tiret (-), suivi de minimum 1 chiffre. L'entièreté de cette référence forme l'identifiant (la clé) d'un Incident. Exemples de correspondances: ABC-123, AD-1, PROJECT1-1452
+* Les deux modèles sont spécifiés comme `[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+` (recommandé): une référence d'Incident est composée de minimum 2 lettres en majuscules ou 2 chiffres, suivis d'un tiret (-), suivi de minimum 1 chiffre. L'entièreté de cette référence forme l'identifiant (la clé) d'un Incident. Exemples de correspondances: `ABC-123, AD-1, PROJECT1-1452`
 
-* Les deux modèles sont spécifiés comme "PROJKEY-[0-9]+": une référence d'Incident est composée de la chaîne de caractères "PROJKEY", suivie d'un tiret (-) et de 1 ou plusieurs chiffres. L'entièreté de cette référence forme l'identifiant (la clé) d'un Incident. Exemples de correspondances PROJKEY-1, PROJKEY-135. Comme vous pouvez le constater, le résultat ne contient que les Incidents pour le Projet Jira.
+* Les deux modèles sont spécifiés comme `PROJKEY-[0-9]+`: une référence d'Incident est composée de la chaîne de caractères `PROJKEY`, suivie d'un tiret (-) et de 1 ou plusieurs chiffres. L'entièreté de cette référence forme l'identifiant (la clé) d'un Incident. Exemples de correspondances `PROJKEY-1, PROJKEY-135`. Comme vous pouvez le constater, le résultat ne contient que les Incidents pour le Projet Jira.
 
 // Comment: Used backslashes for the special characters, asterisk, plus...
-* AVANCÉ: Le Modèle de recherche de Suivi est spécifié comme "([0-9A-Z][0-9A-Z][0-9A-Z]\*-[0-9]\+)(,[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+)\*" et le Modèle d'identifiant de Suivi d'Incident est spécifié comme "[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+": une référence d'Incident est composée de la chaîne de caractères "Issues", suivie d'une liste d'identifiants d'Incidents séparés par une virgule. L'identifiant d'un Incident est composé de minimum 2 lettres en majuscules ou chiffres, suivis d'un tiret (-), suivi de minimum 1 chiffre. Donc, pour un message d'enregistrement suivant: "Résolution des Incidents suivants: WEB-1,WEB-2,WEB3", la référence d'Incident correspondante sera: "Issues: WEB-1,WEB-2,WEB-3" et les identifiants d'Incidents correspondants sont WEB-1, WEB-2, et WEB-3
+* AVANCÉ: Le Modèle de recherche de Suivi est spécifié comme
++
+`([0-9A-Z][0-9A-Z][0-9A-Z]\*-[0-9]\+)(,[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+)\*` 
++
+et le Modèle d'identifiant de Suivi d'Incident est spécifié comme
++
+`[0-9A-Z][0-9A-Z][0-9A-Z]*-[0-9]+`: une référence d'Incident est composée de la chaîne de caractères "Issues", suivie d'une liste d'identifiants d'Incidents séparés par une virgule. 
++
+L'identifiant d'un Incident est composé de minimum 2 lettres en majuscules ou chiffres, suivis d'un tiret (-), suivi de minimum 1 chiffre. Donc, pour un message d'enregistrement suivant: "Résolution des Incidents suivants: WEB-1,WEB-2,WEB3", la référence d'Incident correspondante sera: "Issues: WEB-1,WEB-2,WEB-3" et les identifiants d'Incidents correspondants sont WEB-1, WEB-2, et WEB-3
 
 |Ajouter des Commentaires
 |Si vous établissez cette option à "Oui", IKAN ALM ajoutera un commentaire à l'Incident au moment où il est associé à une Requête de niveau IKAN ALM.
@@ -186,8 +194,8 @@ Elles sont étroitement liées à la valeur du champ "URL complet" du Système d
 +
 Quelques exemples de valeurs:
 
-* http://<host>:<port>/jira/rest
-* https://<host>:<port>/rest
+* \http://<host>:<port>/jira/rest
+* \https://<host>:<port>/rest
 
 . Cliquez sur le bouton _Créer_ pour confirmer la création de la Propriété et fermer le dialogue.
 
