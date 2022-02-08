@@ -6,9 +6,9 @@ Always consult the "antora.yml" file in the document to verify, it should contai
 
 **Documents in this repository**
 
-* how-to-clear-browsercache 5.9
-* how-to-github-integration 5.9(EN) & 5.8(FR)
-* how-to-jira-integration 5.9(EN) & 5.8(FR)
+* how-to-clear-browsercache 5.9(EN) & 5.9(FR)
+* how-to-github-integration 5.9(EN) & 5.9(FR)
+* how-to-jira-integration 5.9(EN) & 5.9(FR)
 * how-to-ui-agentinstall 5.9(EN) & 5.8(FR)
 
 

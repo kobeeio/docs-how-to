@@ -1,6 +1,0 @@
-name: how-to-ui-agentinstall-fr
-title: Agent UI Installation How-to
-version: '5.9'
-start_page: ROOT:HowTo_UIAgentInstall.adoc
-nav:
-- modules/ROOT/nav.adoc  

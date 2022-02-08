@@ -1,1 +1,1 @@
-* xref:HowTo_Clear_browser_cache.adoc[Clear browser cache]
+* xref:HowTo_Clear_browser_cache.adoc[Contents]
