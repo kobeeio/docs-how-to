@@ -49,14 +49,9 @@ distributed builds, or deploy and control remote machines.
 
 === Hardware Requirements
 
-• RAM: minimum 250 MB (megabytes), recommended 0,5 GB (gigabytes) or
-more.
+• RAM: minimum 512MB (megabytes), recommended 1GB (gigabytes) or more.
 +
-Note that these are just indicative values. A Build or Deployment Server
-might have more demanding memory requirements depending on the number of
-builds or deploys that run concurrently. For a more mathematical
-approach, we refer to the article _Capacity Planning For Software Build
-Management Servers_ on the _CM Crossroads_ site: http://www.cmcrossroads.com/cm-journal-articles/6671-capacity-planning-for-software-build-management-servers[http://www.cmcrossroads.com/cm-journal-articles/6671-capacity-planning-for-software-build-management-servers,window=_blank].
+Note that these are just indicative values. The amount of RAM needed by a machine that runs an ALM Agent greatly depends on the amount of resources needed by the build and deploy scripts and custom phases used by the projects that are being built and deployed on it.
 
 • Disk Storage Space: minimum 1 GB (gigabytes).
 +
@@ -71,10 +66,7 @@ and larger build results mean more required disk space.
 
 All IKAN ALM 5.9 components need a Java 11 Development Kit (JDK).
 
-IKAN ALM Agent has been tested to run with both Oracle JDK and Adoptium
-OpenJ9 JDK. The Java 11 Software Development Kit (SDK) can be freely
-obtained from Oracle's website. Both 32-bit and 64-bit versions are
-supported. The latest version of Java SE can be downloaded from http://www.oracle.com/technetwork/java/javase/downloads/index.html[http://www.oracle.com/technetwork/java/javase/downloads/index.html,window=_blank]
+IKAN ALM Agent has been tested to run with Oracle Java, Adoptium Eclipse Temurin (formerly AdoptOpenJDK) Azul Zulu Builds of OpenJDK and OpenJdk on several Linux distros. Oracle Java can be obtained from Oracle's website for non-production environments using an Oracle account. Adoptium OpenJDK can be obtained from https://adoptium.net[https://adoptium.net,window=_blank] and Azul Zulu Builds of the OpenJDK from https://azul.com/downloads/?package=jdk[https://azul.com/downloads/?package=jdk,window=_blank].
 
 === PowerShell (Windows) or SSH (Windows/Linux/Unix) Connection
 
@@ -94,8 +86,8 @@ installation. This can be done in a command shell or with an SSH Client
 like OpenSSH client outside the scope of IKAN ALM. This assures that the
 _known_hosts_ file and other SSH details are correctly configured.
 
-The *PowerShell Connection* type needs some specific Security settings
-on the IKAN ALM Server and Agent Machine.
+The *PowerShell Connection* type needs minimum PowerShell Version *5* installed on the IKAN ALM Server and some specific Security settings
+on both the IKAN ALM Server and Agent Machine.
 
 On the IKAN ALM Server the PowerShell execution policy should be set to
 _Unrestricted._ If this is not the case, it can be obtained by running
@@ -245,16 +237,17 @@ existence of specific jars under the provided path.
 
 Further on in this guide we will refer to this location as ALM_HOME.
 
-|Secure Server-Agent Communication
-|Flag to specify secure communication between the ALM Server and Agent.
-
 |Agent Distribution Folder
 |The location on the Agent Machine where the Agent Installation files
 should be copied to. e.g., `/opt/ikan/agentdistro` or `C:/ikan/alm/agent
 distribution`
 
+It is recommended to make this directory different from the Agent Installation Location, and not make it a subdirectory, for example.
 After a successful installation the used installation files will be
 stored in a _current_ subdirectory of this location.
+
+|Secure Server-Agent Communication
+|Flag to specify secure communication between the ALM Server and Agent.
 
 |Agent Port
 |Optional, defaulted to the value of the Machine definition.
@@ -368,8 +361,8 @@ installer, you need to set this field to the location of that console
 installer, like: `C:/ikan/install/IKAN_ALM_5.8_console`
 
 The installation procedure will detect the version of the Agent and stop
-and remove the old Agent service. Note that this will only work if the
-Agent service was installed using its default service name.
+and remove the old Agent service. Note that this will only work a) if the
+Agent service was installed using its default service name and b) if the _uninstall.properties_ from the console installer contains the correct values for uninstalling the Agent.
 
 |Agent Stop/Start Timeout
 |Timeout in seconds to wait for the Agent service to stop or start.
