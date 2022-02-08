@@ -1,0 +1,1 @@
+* xref:HowTo_Clear_browser_cache.adoc[Comment nettoyer le cache du navigateur]

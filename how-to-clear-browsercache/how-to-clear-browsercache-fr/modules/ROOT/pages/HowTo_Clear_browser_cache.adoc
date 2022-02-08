@@ -1,0 +1,72 @@
+// The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
+:imagesdir: ../images
+:description: Comment nettoyer le cache du navigateur après une mise à niveau d'IKAN ALM
+:revnumber: v5.9
+:revdate: 28.01.2022
+
+= Comment nettoyer le cache du navigateur après une mise à niveau d'IKAN ALM
+
+== Sujet
+
+Ce document technique explique comment nettoyer le cache du navigateur pour utiliser les nouveaux écrans après une mise à niveau d'IKAN ALM.
+
+== Microsoft Edge
+
+. Ouvrir "Paramètres" du menu principal et cliquez sur "Confidentialité, recherche et services":
++
+image::cc_edge1.png[,302,224]
++
+image::cc_edge2.png[,838,189]
++
+. Dans la partie "Effacer les données de navigation", cliquez sur le bouton "Choisir les éléments à effacer" placé sur la droite de la ligne "Effacer les données de navigation maintenant" :
++
+image::cc_edge3.png[,396,448]
++
+. Sélectionnez l'Intervalle de temps : "A tout moment",
+
+. Sélectionnez "Images et fichiers mis en cache",
+
+. Désélectionnez les autres options,
+
+. Cliquez sur le bouton "Effacer maintenant".
+
+
+== Google Chrome
+
+. Ouvrir "Paramètres" du menu principal, ouvrez le menu "Paramètres", puis la liste des "Paramètres avancés" et cliquez sur "Confidentialité et sécurité":
++
+image::cc_chrome1.png[,552,556]
++
+. Cliquez sur le paragraphe "Effacer les données de navigation" :
++
+image::cc_chrome2.png[,508,471]
++
+. Sélectionnez la Période de l'onglet "Général" : "Toutes les périodes",
+
+. Sélectionnez "Images et fichiers en cache",
+
+. Désélectionnez les autres options,
+
+. Cliquez sur le bouton "Effacer les données".
+
+
+
+== Mozilla Firefox
+
+. Ouvrir "Paramètres" du menu principal et cliquez sur "Vie privée et sécurité":
++
+image::cc_firefox1.png[,992,775]
++
+image::cc_firefox2.png[,749,178]
++
+. Dans la partie "Cookies et données du site", cliquez sur le bouton "Effacer les données" :
++
+image::cc_firefox3.png[,541,340]
++
+. Sélectionnez "Contenu web en cache",
+
+. Désélectionnez les autres options,
+
+. Cliquez sur le bouton "Effacer".
+
+

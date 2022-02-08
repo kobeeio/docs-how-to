@@ -1,0 +1,72 @@
+// The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
+:imagesdir: ../images
+:description: How to clear the browser cache after upgrading IKAN ALM
+:revnumber: v5.9
+:revdate: 18.10.2021
+
+= How to clear the browser cache after upgrading IKAN ALM
+
+== Purpose
+
+This technical document explains how to clear the browser cache after upgrading IKAN ALM.
+
+== Microsoft Edge
+
+. Open "Settings", then click on "Privacy, search, and services" :
++
+image::cc_edge1.png[,1192,631]
++
+image::cc_edge2.png[,865,218]
++
+. Under the topic "Clear browsing data", click the button "Choose what to clear" located to the right of "Clear browsing data now" :
++
+image::cc_edge3.png[,404,488]
++
+. Select Time range : "All time",
+
+. Select "Cached images and files",
+
+. Deselect the other checkboxes,
+
+. Click the button "Clear now".
+
+
+== Google Chrome
+
+. Open "Settings", then click on "Privacy and Security" :
++
+image::cc_chrome1.png[,1068,588]
++
+. Click on "Clear browsing data" :
++
+image::cc_chrome2.png[,514,481]
++
+. Select Time range : "All time",
+
+. Select "Cached images and files",
+
+. Deselect the other checkboxes,
+
+. Click the button "Clear data".
+
+
+
+== Mozilla Firefox
+
+. Open "Settings", then click on "Privacy and Security" :
++
+image::cc_firefox1.png[,957,774]
++
+image::cc_firefox2.png[,685,180]
++
+. Under the topic "Cookies and Site Data", click the button "Clear Data" :
++
+image::cc_firefox3.png[,549,315]
++
+. Select "Cached Web Content",
+
+. Deselect the other checkboxes,
+
+. Click the button "Clear".
+
+
