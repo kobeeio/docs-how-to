@@ -50,14 +50,9 @@ Constructions distribuées ou déployer et contrôler des Machines distantes.
 
 === Les exigences de matériel
 
-• RAM: minimum 250 Mo (Mégaoctets), recommandé 0,5 Go (Gigaoctets) ou plus.
+• RAM: minimum 512 Mo (Mégaoctets), recommandé 1 Go (Gigaoctets) ou plus.
 +
-Notez qu'il ne s'agit que de valeurs indicatives. Un Serveur de
-construction ou de déploiement peut avoir des exigences de mémoire plus
-élevées en fonction du nombre de Constructions ou de Déploiements
-exécutés simultanément. Pour une approche plus mathématique, se référer
-à l'article _Capacity Planning For Software Build Management Servers_
-sur le site de _CM Crossroads_: http://www.cmcrossroads.com/cm-journal-articles/6671-capacity-planning-for-software-build-management-servers[http://www.cmcrossroads.com/cm-journal-articles/6671-capacity-planning-for-software-build-management-servers,window=_blank].
+Notez qu'il ne s'agit que de valeurs indicatives. La quantité de RAM et d’espace disque nécessaire à une machine qui exécute un Agent IKAN ALM, dépend en grande partie de la quantité de ressources nécessaires aux scripts de construction et de déploiement et aux phases personnalisées utilisées par les projets qui y sont construits et déployés.
 
 • Espace de stockage disque minimum 1 Go.
 +
@@ -73,11 +68,8 @@ larges, plus l'espace de stockage sera nécessaire sur le disque.
 
 Tous les composants IKAN ALM nécessitent un Kit de développement Java (JDK) 11.
 
-IKAN ALM a été testé pour fonctionner avec Oracle Java ainsi qu'avec
-Adoptium OpenJ9 JDK. Le Kit de développement logiciel (SDK) peux être
-obtenu gratuitement via le site Web d'Oracle. Les versions 32 bits et 64
-bits sont toutes les deux supportées. La version de Java 11 JDK (LTS)
-peut être téléchargée sur http://www.oracle.com/technetwork/java/javase/downloads/index.html[http://www.oracle.com/technetwork/java/javase/downloads/index.html,window=_blank]
+IKAN ALM a été testé pour fonctionner avec Oracle Java, Adoptium Eclipse Temurin (anciennement connu sous le nom AdoptOpenJDK), Azul Zulu fichiers binaires OpenJDK ainsi qu'avec
+OpenJDK de différents versions de Linux. Le Kit de développement logiciel Oracle Java (SDK) peux être obtenu via le site Web d'Oracle. Adoptium OpenJDK peux être obtenu via le site Web https://adoptium.net[https://adoptium.net,window=_blank] et Azul Zulu fichiers binaires OpenJDK via https://azul.com/downloads/?package=jdk[https://azul.com/downloads/?package=jdk,window=_blank]. 
 
 === Connexion PowerShell (Windows) ou SSH (Windows/Linux/Unix)
 
@@ -100,8 +92,7 @@ de commande ou avec un client SSH comme le client OpenSSH en dehors de
 la portée d’IKAN ALM. Cela garantit que le fichier ‘known_hosts’ et
 d’autres détails SSH sont correctement configurés.
 
-Le type de *connexion PowerShell* nécessite des paramètres de sécurité
-spécifiques sur le serveur IKAN ALM et la Machine de l’Agent.
+Le type de *connexion PowerShell* nécessite au minimum la version *5* de PowerShell installé sur le serveur IKAN ALM et des paramètres de sécurité spécifiques sur le serveur IKAN ALM et la Machine de l’Agent.
 
 Sur le serveur IKAN ALM, la stratégie d’exécution PowerShell doit être
 définie sur ‘Unrestricted’. Si ce n’est pas le cas, elle peut être
@@ -241,6 +232,7 @@ Plus loin dans ce guide, nous nous référerons à cet endroit avec le nom ALM_H
 |Emplacement sur la Machine de l’Agent où les fichiers d’installation
 doivent être copiés. Par exemple distribution, `/opt/ikan/agentdistro` ou `C:/ikan/alm/agent`
 
+Il est recommandé de différencier ce répertoire du chemin d'installation de l'agent et de ne pas en faire un sous-répertoire, par exemple. 
 Après une installation réussie, les fichiers d’installation utilisés seront stockés dans un sous-répertoire _courant_ de cet emplacement.
 
 |Communication sécurisée entre le Serveur et l'Agent 
@@ -345,9 +337,7 @@ champ avec l’emplacement de ce programme d’installation de la console,
 comme `C:/ikan/install/IKAN_ALM_5.8_console`.
 
 La procédure d’installation détecte la version de l’Agent, arrête et
-supprime l’ancien service de l’Agent. Notez que cela ne fonctionnera que
-si le service de l’Agent a été installé à l’aide de son nom de service
-par défaut.
+supprime l’ancien service de l’Agent. Notez que cela ne fonctionnera que si a) le service de l’Agent a été installé à l’aide de son nom de service par défaut et b) si _uninstall.properties_ du programme d'installation de la console contient les valeurs correctes pour désinstaller l'agent.
 
 |Délai d'expiration pour arrêter/démarrer l'Agent |Délai d’expiration en
 secondes pour attendre l’arrêt ou le démarrage du service de l’Agent.
