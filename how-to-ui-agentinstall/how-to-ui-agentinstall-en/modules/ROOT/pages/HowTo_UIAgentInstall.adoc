@@ -361,8 +361,8 @@ installer, you need to set this field to the location of that console
 installer, like: `C:/ikan/install/IKAN_ALM_5.8_console`
 
 The installation procedure will detect the version of the Agent and stop
-and remove the old Agent service. Note that this will only work a) if the
-Agent service was installed using its default service name and b) if the _uninstall.properties_ from the console installer contains the correct values for uninstalling the Agent.
+and remove the old Agent service. Note that this will only work correctly a) if the
+Agent service was installed using its default service name and b) if the _uninstall.properties_ file from the console installer contains the correct values for uninstalling the Agent.
 
 |Agent Stop/Start Timeout
 |Timeout in seconds to wait for the Agent service to stop or start.
@@ -408,13 +408,13 @@ a|Select the required Authentication type. Available options:
 also be used to register the Agent daemon on Linux and Unix Machines
 
 |Password
-|Required Password for User and Password Authentication
+|Required Password for User and Password Authentication. Note that this Password may also be used to register the Agent daemon on Linux and Unix Machines
 
 |Repeat Password
 |Repeat the Password for User and Password Authentication
 
 |Key File Path
-|Required Path to the Key File for Key Authentication
+|Required Path to the Key File containing the private key for Key Authentication. We advise you to generate the keys in the _PEM_ file format. This can be done by adding `-m PEM` to ssh-keygen's arguments when generating or updating a key.
 
 |Passphrase
 |Optional Passphrase for Key Authentication.

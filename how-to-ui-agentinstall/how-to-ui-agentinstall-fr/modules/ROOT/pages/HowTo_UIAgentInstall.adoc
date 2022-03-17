@@ -233,7 +233,7 @@ Plus loin dans ce guide, nous nous référerons à cet endroit avec le nom ALM_H
 doivent être copiés. Par exemple distribution, `/opt/ikan/agentdistro` ou `C:/ikan/alm/agent`
 
 Il est recommandé de différencier ce répertoire du chemin d'installation de l'agent et de ne pas en faire un sous-répertoire, par exemple. 
-Après une installation réussie, les fichiers d’installation utilisés seront stockés dans un sous-répertoire _courant_ de cet emplacement.
+Après une installation réussie, les fichiers d’installation utilisés seront stockés dans un sous-répertoire avec le nom _current_ de cet emplacement.
 
 |Communication sécurisée entre le Serveur et l'Agent 
 |Option pour spécifier une communication sécurisée entre le Serveur et l’Agent IKAN ALM.
@@ -337,7 +337,7 @@ champ avec l’emplacement de ce programme d’installation de la console,
 comme `C:/ikan/install/IKAN_ALM_5.8_console`.
 
 La procédure d’installation détecte la version de l’Agent, arrête et
-supprime l’ancien service de l’Agent. Notez que cela ne fonctionnera que si a) le service de l’Agent a été installé à l’aide de son nom de service par défaut et b) si _uninstall.properties_ du programme d'installation de la console contient les valeurs correctes pour désinstaller l'agent.
+supprime l’ancien service de l’Agent. Notez que cela ne fonctionnera que si a) le service de l’Agent a été installé à l’aide de son nom de service par défaut et b) si le fichier _uninstall.properties_ du programme d'installation de la console contient les valeurs correctes pour désinstaller l'agent.
 
 |Délai d'expiration pour arrêter/démarrer l'Agent |Délai d’expiration en
 secondes pour attendre l’arrêt ou le démarrage du service de l’Agent.
@@ -386,11 +386,10 @@ a|Sélectionnez le type d’authentification requis. Options disponibles :
 |Mot de passe SSH requis pour l'authentification Nom/Mot de passe
 
 |Répétez le mot de passe
-|Répétez le mot de passe pour l'authentification Nom/Mot de passe.
+|Répétez le mot de passe pour l'authentification Nom/Mot de passe. Notez que ce mot de passe sera également utilisé pour enregistrer le démon de l’Agent sur les machines Linux et Unix.
 
 |Chemin du fichier des clés
-|Emplacement du fichier des clés SSH requis pour l'authentification par
-Clé.
+|Emplacement du fichier des clés SSH contenant la clé privée requis pour l'authentification par Clé. Nous vous conseillons de générer les clés au format de fichier _PEM_. Cela peut être fait en ajoutant `-m PEM` aux arguments de ssh-keygen lors de la génération ou de la mise à jour d'une clé. 
 
 |Phrase de passe
 |Phrase de passe SSH optionnelle pour l'authentification par Clé.
