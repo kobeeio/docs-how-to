@@ -64,7 +64,7 @@ and larger build results mean more required disk space.
 
 === A Java 11(LTS) JDK
 
-All Kobee 5.9 components need a Java 11 Development Kit (JDK).
+All Kobee 6.0 components need a Java 11 Development Kit (JDK).
 
 Kobee Agent has been tested to run with Oracle Java, Adoptium Eclipse Temurin (formerly AdoptOpenJDK) Azul Zulu Builds of OpenJDK and OpenJdk on several Linux distros. Oracle Java can be obtained from Oracle's website for non-production environments using an Oracle account. Adoptium OpenJDK can be obtained from https://adoptium.net[https://adoptium.net,window=_blank] and Azul Zulu Builds of the OpenJDK from https://azul.com/downloads/?package=jdk[https://azul.com/downloads/?package=jdk,window=_blank].
 
