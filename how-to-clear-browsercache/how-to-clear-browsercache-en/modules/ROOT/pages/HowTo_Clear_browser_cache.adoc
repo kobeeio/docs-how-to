@@ -1,14 +1,14 @@
 // The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
 :imagesdir: ../images
-:description: How to clear the browser cache after upgrading IKAN ALM
-:revnumber: v5.9
-:revdate: 18.10.2021
+:description: How to clear the browser cache after upgrading Kobee
+:revnumber: v6.0
+:revdate: 11.08.2023
 
-= How to clear the browser cache after upgrading IKAN ALM
+= How to clear the browser cache after upgrading Kobee
 
 == Purpose
 
-This technical document explains how to clear the browser cache after upgrading IKAN ALM.
+This technical document explains how to clear the browser cache after upgrading Kobee.
 
 == Microsoft Edge
 

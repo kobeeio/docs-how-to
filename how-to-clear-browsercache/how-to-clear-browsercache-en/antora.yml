@@ -1,6 +1,6 @@
 name: how-to-clear-browsercache-en
 title: Clear browser cache How-to
-version: '5.9'
+version: '6.0'
 start_page: ROOT:HowTo_Clear_browser_cache.adoc
 nav:
 - modules/ROOT/nav.adoc  

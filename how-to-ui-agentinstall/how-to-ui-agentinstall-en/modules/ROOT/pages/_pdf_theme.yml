@@ -25,12 +25,12 @@ footer:
     right:
       content: '{section-or-chapter-title} | *{page-number}*'
     left:
-      content: 'IKAN ALM Agent UI Install - {revnumber}'      
+      content: 'Kobee Agent UI Install - {revnumber}'      
   verso:
     left:
       content: '*{page-number}* | {section-or-chapter-title}'
     right:
-      content: 'IKAN ALM Agent UI Install - {revnumber}'      
+      content: 'Kobee Agent UI Install - {revnumber}'      
 title-page:
   font-family: Source Sans Pro  
   logo:

@@ -1,30 +1,30 @@
 // The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
 :imagesdir: ../images
-:description: Installation Agent avec IKAN ALM Comment (Français)
-:revnumber: v5.9
-:revdate: 25.01.2022
+:description: Installation Agent avec Kobee Comment (Français)
+:revnumber: v6.0
+:revdate: 11.08.2023
 
-= Installation de l'Agent IKAN ALM via l’application WEB
+= Installation de l'Agent Kobee via l’application WEB
 
 == Objectif
 
 Si des actions de construction ou de déploiement sont planifiées sur un
 environnement local ou distant requérant une interaction avec le système
-Cible, un Agent IKAN ALM doit être installé sur cette Machine. Ce
+Cible, un Agent Kobee doit être installé sur cette Machine. Ce
 document technique explique la procédure d'installation d'un Agent IKAN
-ALM via l’application Web IKAN ALM (c'est-à-dire l’Interface Utilisateur).
+ALM via l’application Web Kobee (c'est-à-dire l’Interface Utilisateur).
 
 [NOTE]
 ====
 Le terme "environnement distant" s'applique à un autre système
-que le système du Serveur IKAN ALM. Une construction locale sera
-exécutée sur la Machine Serveur et Agent IKAN ALM elle-même.
+que le système du Serveur Kobee. Une construction locale sera
+exécutée sur la Machine Serveur et Agent Kobee elle-même.
 ====
 
 Par conséquent, ce document peut servir différents objectifs. Vérifiez
 si votre cas correspond à l’une des situations suivantes:
 
-• Vous avez installé l'application IKAN ALM Démo (qui installe le
+• Vous avez installé l'application Kobee Démo (qui installe le
 Serveur ainsi que l'Agent dans un conteneur Serveur Web Tomcat/Karaf
 OSGi) et vous voulez exécutez des Constructions et/ou des Déploiements
 sur une autre Machine que celle sur laquelle est installée cette application.
@@ -36,14 +36,14 @@ production puisqu'une Construction nécessitant beaucoup de mémoire peut
 causer l'arrêt du conteneur OSGi à cause d'erreurs dites "OutOfMemory".
 
 • Vous avez installé, ou vous avez l'intention d'installer, le Serveur
-IKAN ALM et vous voulez installer un Agent IKAN ALM sur la même Machine
+Kobee et vous voulez installer un Agent Kobee sur la même Machine
 (en même temps que l'installation Serveur ou comme installation
 séparée), pour que vous puissiez exécuter des Constructions locales (ou
 même des Déploiements dans certain cas) sur la Machine Serveur. C'est la
 méthode conseillée pour exécuter des Constructions locales.
 
-• Vous avez installé le Serveur IKAN ALM et vous voulez installer un
-Agent IKAN ALM sur une autre Machine distante pour pouvoir exécuter des
+• Vous avez installé le Serveur Kobee et vous voulez installer un
+Agent Kobee sur une autre Machine distante pour pouvoir exécuter des
 Constructions distribuées ou déployer et contrôler des Machines distantes.
 
 == Prérequis
@@ -52,12 +52,12 @@ Constructions distribuées ou déployer et contrôler des Machines distantes.
 
 • RAM: minimum 512 Mo (Mégaoctets), recommandé 1 Go (Gigaoctets) ou plus.
 +
-Notez qu'il ne s'agit que de valeurs indicatives. La quantité de RAM et d’espace disque nécessaire à une machine qui exécute un Agent IKAN ALM, dépend en grande partie de la quantité de ressources nécessaires aux scripts de construction et de déploiement et aux phases personnalisées utilisées par les projets qui y sont construits et déployés.
+Notez qu'il ne s'agit que de valeurs indicatives. La quantité de RAM et d’espace disque nécessaire à une machine qui exécute un Agent Kobee, dépend en grande partie de la quantité de ressources nécessaires aux scripts de construction et de déploiement et aux phases personnalisées utilisées par les projets qui y sont construits et déployés.
 
 • Espace de stockage disque minimum 1 Go.
 +
 Il n'existe pas de règle absolue sur l'espace de stockage disque requis.
-L'espace occupé d'une installation simple d'un Agent IKAN ALM est
+L'espace occupé d'une installation simple d'un Agent Kobee est
 inférieur à 40 Mo. L'espace réel requis par un Agent dépend
 du nombre et de la taille des Projets gérés par cet Agent, et de la
 taille des ressources nécessaires pour exécuter une Construction ou un
@@ -66,15 +66,15 @@ larges, plus l'espace de stockage sera nécessaire sur le disque.
 
 === Java Virtual Machine JDK version 11 (LTS)
 
-Tous les composants IKAN ALM nécessitent un Kit de développement Java (JDK) 11.
+Tous les composants Kobee nécessitent un Kit de développement Java (JDK) 11.
 
-IKAN ALM a été testé pour fonctionner avec Oracle Java, Adoptium Eclipse Temurin (anciennement connu sous le nom AdoptOpenJDK), Azul Zulu fichiers binaires OpenJDK ainsi qu'avec
+Kobee a été testé pour fonctionner avec Oracle Java, Adoptium Eclipse Temurin (anciennement connu sous le nom AdoptOpenJDK), Azul Zulu fichiers binaires OpenJDK ainsi qu'avec
 OpenJDK de différents versions de Linux. Le Kit de développement logiciel Oracle Java (SDK) peux être obtenu via le site Web d'Oracle. Adoptium OpenJDK peux être obtenu via le site Web https://adoptium.net[https://adoptium.net,window=_blank] et Azul Zulu fichiers binaires OpenJDK via https://azul.com/downloads/?package=jdk[https://azul.com/downloads/?package=jdk,window=_blank]. 
 
 === Connexion PowerShell (Windows) ou SSH (Windows/Linux/Unix)
 
-L’installation de l’Agent IKAN ALM avec l’Interface Utilisateur est
-gérée et envoyée du Serveur IKAN ALM à la Machine (distante) de l’Agent.
+L’installation de l’Agent Kobee avec l’Interface Utilisateur est
+gérée et envoyée du Serveur Kobee à la Machine (distante) de l’Agent.
 Cela peut être fait via une connexion PowerShell (Windows) ou SSH
 (Windows, Linux ou Unix). Les deux types de connexion ont besoin d’un
 utilisateur et de données d’authentification pour fonctionner sur la
@@ -86,15 +86,15 @@ paramètres de connexion, reportez-vous à la section correspondante.
 
 Lorsque vous optez pour le type de *connexion SSH*, la Machine cible de
 l’Agent doit exécuter un serveur SSH. Il est conseillé de tester la
-connexion du Serveur IKAN ALM avec la Machine cible de l’Agent avant de
+connexion du Serveur Kobee avec la Machine cible de l’Agent avant de
 tenter l’installation de l’Agent. Cela peut être fait dans une interface
 de commande ou avec un client SSH comme le client OpenSSH en dehors de
-la portée d’IKAN ALM. Cela garantit que le fichier ‘known_hosts’ et
+la portée d’Kobee. Cela garantit que le fichier ‘known_hosts’ et
 d’autres détails SSH sont correctement configurés.
 
-Le type de *connexion PowerShell* nécessite au minimum la version *5* de PowerShell installé sur le serveur IKAN ALM et des paramètres de sécurité spécifiques sur le serveur IKAN ALM et la Machine de l’Agent.
+Le type de *connexion PowerShell* nécessite au minimum la version *5* de PowerShell installé sur le serveur Kobee et des paramètres de sécurité spécifiques sur le serveur Kobee et la Machine de l’Agent.
 
-Sur le serveur IKAN ALM, la stratégie d’exécution PowerShell doit être
+Sur le serveur Kobee, la stratégie d’exécution PowerShell doit être
 définie sur ‘Unrestricted’. Si ce n’est pas le cas, elle peut être
 obtenue en exécutant la commande suivante dans une invite PowerShell
 avec élévation de privilèges :
@@ -103,10 +103,10 @@ avec élévation de privilèges :
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine
 
 Le "scope" doit être défini sur LocalMachine pour permettre au Serveur
-IKAN ALM, s’exécutant en tant que service Windows sous le compte
+Kobee, s’exécutant en tant que service Windows sous le compte
 ‘Système local’, d’exécuter des scripts PowerShell.
 
-Sur la Machine cible de l’Agent IKAN ALM, la communication à distance
+Sur la Machine cible de l’Agent Kobee, la communication à distance
 PowerShell doit être activée. Exécutez la commande suivante à partir
 d’une invite PowerShell avec élévation de privilèges si elle doit être
 modifiée :
@@ -119,12 +119,12 @@ sessions PowerShell distantes.
 
 Il est également important que l’utilisateur PowerShell dispose de
 *Droits d’administration* pour pouvoir installer/désinstaller l’Agent
-IKAN ALM en tant que service Windows.
+Kobee en tant que service Windows.
 
-=== Connexion HTTP ou HTTPS avec le Serveur IKAN ALM
+=== Connexion HTTP ou HTTPS avec le Serveur Kobee
 
 La communication entre le Serveur et les Agents se fait via le protocole
-XML-RPC. Cela signifie qu'IKAN ALM permet de l'informatique distribuée
+XML-RPC. Cela signifie qu'Kobee permet de l'informatique distribuée
 (des appels de procédure à distance) en utilisant HTTP ou HTTPS comme
 protocole de transport et XML pour l'encodage (pour plus d'informations,
 se référer au site http://www.xmlrpc.com[www.xmlrpc.com,window=_blank]). Pour pouvoir
@@ -136,7 +136,7 @@ Machine Serveur.
 
 Pour pouvoir exécuter un script de construction ou de déploiement sur la
 Machine distante, l'Outil de script approprié doit être installé sur la
-Machine cible de l'Agent. IKAN ALM supporte les Outils de script Ant,
+Machine cible de l'Agent. Kobee supporte les Outils de script Ant,
 Gradle, NAnt et Maven2 ou 3. Les autres scripts (Perl, make, …) peuvent être
 appelés facilement via ces Outils de script supportés.
 
@@ -156,10 +156,10 @@ d'exécution, vous pouvez toujours installer et configurer un Outil de
 script.
 ====
 
-== Installation de l'Agent IKAN ALM via l’application WEB
+== Installation de l'Agent Kobee via l’application WEB
 
-L’installation de l’Agent IKAN ALM peut être configurée, démarrée et
-gérée à partir de l’Interface Utilisateur de l’application Web IKAN ALM.
+L’installation de l’Agent Kobee peut être configurée, démarrée et
+gérée à partir de l’Interface Utilisateur de l’application Web Kobee.
 Après avoir créé la définition de la Machine dans l’_Administration
 Globale_, une fonctionnalité d’_Installation_ est disponible dans le
 panneau de l’_Administration Globale > Machines > Aperçu_. En la
@@ -167,12 +167,12 @@ sélectionnant, l’Interface Utilisateur de _Configuration de
 l’installation_ de l’Agent s’ouvre. Après avoir configuré les détails
 d’installation de *Configuration Générale* et *SecureShell* ou
 *PowerShell*, l’installation de l’Agent peut être démarrée et suivie sur
-ce panneau. Selon le type de connexion choisi, le serveur IKAN ALM
+ce panneau. Selon le type de connexion choisi, le serveur Kobee
 automatisera les étapes suivantes via *SecureShell* ou exécutera des
 scripts *PowerShell* qui agissent sur la Machine (distante) de l’Agent :
 
 
-. Création d’un répertoire temporaire sur le serveur IKAN ALM, copie des fichiers d’installation de l’Agent configurables et remplacement des variables dans les fichiers d’installation
+. Création d’un répertoire temporaire sur le serveur Kobee, copie des fichiers d’installation de l’Agent configurables et remplacement des variables dans les fichiers d’installation
 . Création d’un dossier de distribution de l’Agent sur la Machine distante
 . Copie du fichier de distribution compressé de l’Agent, une archive Apache ANT compressée et les fichiers d’installation de l’Agent (script et propriétés Apache ANT, fichiers cmd et shell) dans le dossier de distribution de l’Agent.
 . Lancement d’une invite cmd ou shell qui :
@@ -183,10 +183,10 @@ scripts *PowerShell* qui agissent sur la Machine (distante) de l’Agent :
 . Script ANT : Décompresse la distribution de l’Agent
 . Script ANT : Copie les propriétés d’installation et les fichiers cmd
 ou shell
-. Script ANT : Arrête le service ou le démon de l’Agent IKAN ALM s’il est en cours d’exécution
-. Script ANT : Désinstalle l’Agent IKAN ALM précédent si demandé
-. Script ANT: Installe le nouvel Agent IKAN ALM. Il démarrera un script ANT (différent), qui fonctionne de la même manière que l’installation de l’Agent IKAN ALM via la console.
-. Script ANT : Enregistre l’Agent IKAN ALM en tant que service Windows
+. Script ANT : Arrête le service ou le démon de l’Agent Kobee s’il est en cours d’exécution
+. Script ANT : Désinstalle l’Agent Kobee précédent si demandé
+. Script ANT: Installe le nouvel Agent Kobee. Il démarrera un script ANT (différent), qui fonctionne de la même manière que l’installation de l’Agent Kobee via la console.
+. Script ANT : Enregistre l’Agent Kobee en tant que service Windows
 ou démon Linux
 . Script ANT : Démarre le service ou le démon enregistré
 . Script ANT : Nettoie les répertoires temporaires
@@ -236,7 +236,7 @@ Il est recommandé de différencier ce répertoire du chemin d'installation de l
 Après une installation réussie, les fichiers d’installation utilisés seront stockés dans un sous-répertoire avec le nom _current_ de cet emplacement.
 
 |Communication sécurisée entre le Serveur et l'Agent 
-|Option pour spécifier une communication sécurisée entre le Serveur et l’Agent IKAN ALM.
+|Option pour spécifier une communication sécurisée entre le Serveur et l’Agent Kobee.
 
 |Port de l'Agent 
 |Facultatif, valeur par défaut de la définition de la Machine.
@@ -244,34 +244,34 @@ Après une installation réussie, les fichiers d’installation utilisés seront
 Port sur lequel l’Agent sera à l’écoute. La valeur par défaut est "20020".
 
 Si vous modifiez cette valeur, vous devrez également modifier la
-propriété "Port de l’Agent" de la Machine représentant cet Agent dans l’interface graphique IKAN ALM.
+propriété "Port de l’Agent" de la Machine représentant cet Agent dans l’interface graphique Kobee.
 
 |Nom du Serveur 
 |Facultatif, valeur par défaut de la définition de la Machine.
 
-Nom d’hôte (ou adresse IP) de la Machine du Serveur IKAN ALM.
+Nom d’hôte (ou adresse IP) de la Machine du Serveur Kobee.
 
 L’Agent essaiera de se connecter au Serveur à l’aide de ce nom ou de cette adresse IP.
 
-Accédez à _Administration globale > Paramètres Système_ et _Environnement local_ du panneau: la valeur de "Serveur IKAN ALM" représente la Machine du Serveur IKAN ALM.
+Accédez à _Administration globale > Paramètres Système_ et _Environnement local_ du panneau: la valeur de "Serveur Kobee" représente la Machine du Serveur Kobee.
 
 |Port du Serveur 
 |Facultatif, valeur par défaut de la définition de la Machine.
 
-Port sur lequel le Serveur IKAN ALM sera à l’écoute.
+Port sur lequel le Serveur Kobee sera à l’écoute.
 
-L’Agent essaiera de se connecter au Serveur sur ce port. Le paramètre peut être vérifié dans l’Administration Globale IKAN ALM :
+L’Agent essaiera de se connecter au Serveur sur ce port. Le paramètre peut être vérifié dans l’Administration Globale Kobee :
 
 Accédez _à Administration Globale > Machines > Aperçu_
 
-Vérifiez la propriété "Port du serveur" de la Machine Serveur IKAN ALM. Si aucun Port du Serveur n’est défini sur la Machine Serveur IKAN ALM, le port 20021 sera utilisé.
+Vérifiez la propriété "Port du serveur" de la Machine Serveur Kobee. Si aucun Port du Serveur n’est défini sur la Machine Serveur Kobee, le port 20021 sera utilisé.
 
 |Nom d'hôte de l'Agent 
 |Optionnel. 
 
 Laissez ce champ vide, sauf, si vous souhaitez remplacer le nom d’hôte détecté automatiquement de l’Agent. 
 
-Par exemple, pour utiliser un nom de domaine complet comme `almAgent.your.domain` pour communiquer avec le Serveur IKAN ALM. Il est important que le nom d’hôte entré ici corresponde au nom DHCP de la Machine Agent (dans l’interface graphique IKAN ALM).
+Par exemple, pour utiliser un nom de domaine complet comme `almAgent.your.domain` pour communiquer avec le Serveur Kobee. Il est important que le nom d’hôte entré ici corresponde au nom DHCP de la Machine Agent (dans l’interface graphique Kobee).
 
 |Adresse IP de l'Agent 
 |Optionnel. 
@@ -279,13 +279,13 @@ Par exemple, pour utiliser un nom de domaine complet comme `almAgent.your.domain
 Laissez ce champ vide, sauf, si vous souhaitez remplacer l’adresse IP détectée automatiquement de l’Agent.
 
 Par exemple, pour utiliser une adresse IP qui diffère de l’adresse IP
-interne pour communiquer avec le Serveur IKAN ALM. Il est important que
+interne pour communiquer avec le Serveur Kobee. Il est important que
 l’adresse IP entrée ici corresponde à l’adresse IP de la Machine Agent
-(dans l’interface graphique IKAN ALM).
+(dans l’interface graphique Kobee).
 |===
 
 Les trois premiers champs suivants sont les numéros de port spécifiques
-du conteneur Karaf hébergeant le démon de l’Agent IKAN ALM. Normalement,
+du conteneur Karaf hébergeant le démon de l’Agent Kobee. Normalement,
 il n’est pas nécessaire de modifier ces numéros de port, sauf si vous
 avez des conflits de port. Pour plus d’informations, reportez-vous à la
 documentation Karaf container 4.0: https://karaf.apache.org/manual/latest/#_instances[https://karaf.apache.org/manual/latest/#_instances,window=_blank]
@@ -312,13 +312,13 @@ La valeur par défaut est “44444”.
 La valeur par défaut est “8101”.
 
 |Chemin du journal Karaf 
-|Le chemin relatif du journal Karaf de l'Agent IKAN ALM.
+|Le chemin relatif du journal Karaf de l'Agent Kobee.
 
-Ce paramètre est utilisé par le Serveur IKAN ALM lors de l’affichage de
+Ce paramètre est utilisé par le Serveur Kobee lors de l’affichage de
 la _Trace de la Machine_ d’un Agent sur l’écran _Statut détaillé de la Machine_.
 
 |Exécuter la Désinstallation de l'Agent 
-|Option indiquant si le processus de désinstallation doit s’exécuter en premier pour désinstaller l’Agent IKAN ALM précédemment installé.
+|Option indiquant si le processus de désinstallation doit s’exécuter en premier pour désinstaller l’Agent Kobee précédemment installé.
 
 La valeur par défaut est “Oui”.
 
@@ -343,7 +343,7 @@ supprime l’ancien service de l’Agent. Notez que cela ne fonctionnera que si 
 secondes pour attendre l’arrêt ou le démarrage du service de l’Agent.
 
 |Type de Connexion 
-|Type de connexion entre le Serveur IKAN ALM et la Machine cible de
+|Type de connexion entre le Serveur Kobee et la Machine cible de
 l’Agent. Les options possibles sont SSH (SecureShell) ou PowerShell.
 
 Une fois que vous avez sélectionné le type de connexion, le panneau
@@ -477,7 +477,7 @@ image::image4.png[,309,121]
 Cliquez sur *_Démarrer l’Installation_* pour démarrer l’Installation de l’Agent.
 ====
 
-L’Installation de l’Agent sera démarrée par le Serveur IKAN ALM. Les
+L’Installation de l’Agent sera démarrée par le Serveur Kobee. Les
 différentes étapes d’installation seront exécutées comme décrit dans
 l’introduction de ce chapitre. Le processus sera enregistré dans le
 panneau _État de l'Installation de l'Agent_. Son état passe de
@@ -501,7 +501,7 @@ image::image6.png[,310,145]
 Cliquez sur Abandonner pour abandonner l’Installation de l’Agent, définitivement.
 ====
 
-Le Serveur IKAN ALM essaiera d’annuler l’installation pendant
+Le Serveur Kobee essaiera d’annuler l’installation pendant
 l’exécution. Lorsque vous sélectionnez l’option *_Forcer l'interruption
 immédiate_*, le Serveur arrête brusquement les processus en cours d’exécution.
 

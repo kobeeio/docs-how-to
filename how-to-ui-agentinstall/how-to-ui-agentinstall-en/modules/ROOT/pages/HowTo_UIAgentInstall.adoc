@@ -1,33 +1,33 @@
 // The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
 :imagesdir: ../images
 :description: Agent UI Installation How-to (English)
-:revnumber: v5.9
-:revdate: 01.06.2021
+:revnumber: v6.0
+:revdate: 11.08.2023
 
-= IKAN ALM Agent UI Installation
+= Kobee Agent UI Installation
 
 == Purpose
 
 When build or deploy actions are planned on a local or remote
 environment which requires interaction with the target system, an IKAN
 ALM Agent must be installed on that machine. This technical document
-explains how to do an installation of an IKAN ALM Agent through the IKAN
+explains how to do an installation of an Kobee Agent through the IKAN
 ALM web application.
 
 [NOTE]
 ====
 The term “remote environment” refers to a system different from
-the IKAN ALM Server system. A local build or deploy will happen on the
-IKAN ALM Server machine itself.
+the Kobee Server system. A local build or deploy will happen on the
+Kobee Server machine itself.
 ====
 
 As a consequence, this document can be used for different purposes, so
 check if the following situation applies to you:
 
-• You have installed the IKAN ALM Demo (which installs both the Server
+• You have installed the Kobee Demo (which installs both the Server
 and the Agent daemon on a Tomcat webserver/Karaf OSGi container) and you
 want to run builds and/or deployments on a different machine than the
-one on which you installed the IKAN ALM Demo.
+one on which you installed the Kobee Demo.
 +
 Note that for a demo installation we run both the Agent and the Server
 inside the Java VM of the same OSGi container, which is not the
@@ -35,13 +35,13 @@ recommended configuration of a production system, as a heavy,
 memory-intensive build can cause your OSGi container to stop functioning
 due to OutOfMemory errors.
 
-• You have installed or you are installing the IKAN ALM Server and want
+• You have installed or you are installing the Kobee Server and want
 to install (together with the Server installation or as a separate
-installation) an IKAN ALM agent on the same machine, so that you can run
+installation) an Kobee agent on the same machine, so that you can run
 local builds (even deployments in some cases) on the Server machine.
 This is the advised way of running local builds.
 
-• You have installed the IKAN ALM Server and you want to install an IKAN
+• You have installed the Kobee Server and you want to install an IKAN
 ALM Agent on a different, remote machine, so that you can run
 distributed builds, or deploy and control remote machines.
 
@@ -56,7 +56,7 @@ Note that these are just indicative values. The amount of RAM needed by a machin
 • Disk Storage Space: minimum 1 GB (gigabytes).
 +
 There is no hard and fast rule for disk storage space. The footprint of
-a bare installed IKAN ALM Agent (with distribution files) is under 180
+a bare installed Kobee Agent (with distribution files) is under 180
 MB (megabytes). The actual amount an Agent will require depends on the
 number and the size of the projects managed with this agent, and the
 size of the resources needed to run a build or deployment. More projects
@@ -64,13 +64,13 @@ and larger build results mean more required disk space.
 
 === A Java 11(LTS) JDK
 
-All IKAN ALM 5.9 components need a Java 11 Development Kit (JDK).
+All Kobee 5.9 components need a Java 11 Development Kit (JDK).
 
-IKAN ALM Agent has been tested to run with Oracle Java, Adoptium Eclipse Temurin (formerly AdoptOpenJDK) Azul Zulu Builds of OpenJDK and OpenJdk on several Linux distros. Oracle Java can be obtained from Oracle's website for non-production environments using an Oracle account. Adoptium OpenJDK can be obtained from https://adoptium.net[https://adoptium.net,window=_blank] and Azul Zulu Builds of the OpenJDK from https://azul.com/downloads/?package=jdk[https://azul.com/downloads/?package=jdk,window=_blank].
+Kobee Agent has been tested to run with Oracle Java, Adoptium Eclipse Temurin (formerly AdoptOpenJDK) Azul Zulu Builds of OpenJDK and OpenJdk on several Linux distros. Oracle Java can be obtained from Oracle's website for non-production environments using an Oracle account. Adoptium OpenJDK can be obtained from https://adoptium.net[https://adoptium.net,window=_blank] and Azul Zulu Builds of the OpenJDK from https://azul.com/downloads/?package=jdk[https://azul.com/downloads/?package=jdk,window=_blank].
 
 === PowerShell (Windows) or SSH (Windows/Linux/Unix) Connection
 
-The UI IKAN ALM Agent Installation is managed and pushed from the IKAN
+The UI Kobee Agent Installation is managed and pushed from the IKAN
 ALM Server to the (remote) Agent Machine. This may be done through a
 PowerShell (Windows) or SSH Connection (Windows, Linux or Unix). Both
 connection types need a User and Authentication data in order to operate
@@ -81,15 +81,15 @@ and connection parameters.
 
 When opting for the *SSH Connection* type, the target Agent machine must
 be running an SSH server. It is advised to test the connection from the
-IKAN ALM Server to the target Agent Machine before attempting an Agent
+Kobee Server to the target Agent Machine before attempting an Agent
 installation. This can be done in a command shell or with an SSH Client
-like OpenSSH client outside the scope of IKAN ALM. This assures that the
+like OpenSSH client outside the scope of Kobee. This assures that the
 _known_hosts_ file and other SSH details are correctly configured.
 
-The *PowerShell Connection* type needs minimum PowerShell Version *5* installed on the IKAN ALM Server and some specific Security settings
-on both the IKAN ALM Server and Agent Machine.
+The *PowerShell Connection* type needs minimum PowerShell Version *5* installed on the Kobee Server and some specific Security settings
+on both the Kobee Server and Agent Machine.
 
-On the IKAN ALM Server the PowerShell execution policy should be set to
+On the Kobee Server the PowerShell execution policy should be set to
 _Unrestricted._ If this is not the case, it can be obtained by running
 following command in an elevated PowerShell prompt:
 
@@ -98,11 +98,11 @@ following command in an elevated PowerShell prompt:
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine
 ----
 
-The scope should be set to _LocalMachine_ to allow the IKAN ALM Server
+The scope should be set to _LocalMachine_ to allow the Kobee Server
 running as a Windows service under the Local System Account to run
 PowerShell scripts.
 
-On the target IKAN ALM Agent Machine PowerShell remoting needs to be
+On the target Kobee Agent Machine PowerShell remoting needs to be
 enabled. Run following command from an elevated PowerShell prompt if it
 should be changed:
 
@@ -115,13 +115,13 @@ This is needed so that the remote Agent machine accepts remote
 PowerShell sessions.
 
 It is also important that the PowerShell User has *Administrative
-rights* to be able to install/uninstall the IKAN ALM Agent as a Windows
+rights* to be able to install/uninstall the Kobee Agent as a Windows
 service.
 
-=== HTTP or HTTPS Connection with IKAN ALM Server
+=== HTTP or HTTPS Connection with Kobee Server
 
 The communication between the Server and the Agent daemons is done over
-XML-RPC. This means that IKAN ALM enables distributed computing (remote
+XML-RPC. This means that Kobee enables distributed computing (remote
 procedure calls) using HTTP or HTTPS as the transport protocol and XML
 for the encoding (for more information, refer to
 http://www.xmlrpc.com[www.xmlrpc.com,window=_blank]. In order to
@@ -132,11 +132,11 @@ have a correct TCP/IP connection to the __Server machine__.
 
 In order to execute a build or deploy script on the remote machine, the
 correct scripting tool must be installed on the target Agent system.
-IKAN ALM supports Ant, Gradle, NAnt and Maven2 as scripting tools. Other
+Kobee supports Ant, Gradle, NAnt and Maven2 as scripting tools. Other
 scripts (Perl, make, …) can be easily called via these supported
 scripting tools.
 
-Contact IKAN ALM support if more information is
+Contact Kobee support if more information is
 needed. Check the different websites
 http://ant.apache.org[http://ant.apache.org,window=_blank],
 http://gradle.org[http://gradle.org,window=_blank],
@@ -153,20 +153,20 @@ install and configure the scripting tool after the Agent is up and
 running.
 ====
 
-== IKAN ALM Agent UI Installation
+== Kobee Agent UI Installation
 
-The IKAN ALM Agent UI Installation can be configured, started and
-managed from within the IKAN ALM Web Application. After you have created
+The Kobee Agent UI Installation can be configured, started and
+managed from within the Kobee Web Application. After you have created
 the Machine definition in _Global Administration_, an _Install_
 functionality is available in the _Global Administration > Machines
 Overview._ Selecting it will open the _Agent Install Configuration_ UI.
 After configuring the *General* and *SecureShell* or *PowerShell*
 installation details the Agent Installation can be started and followed
-up on this page. Depending on the chosen *Connection Type* the IKAN ALM
+up on this page. Depending on the chosen *Connection Type* the Kobee
 Server will automate the following steps through a *Secure Shell,* or
 execute *PowerShell* scripts that act on the (remote) Agent Machine:
 
-. Create a temporary directory on the IKAN ALM server, copy configurable
+. Create a temporary directory on the Kobee server, copy configurable
 Agent installation files to it and replace variables in the installation
 files
 . Create an Agent Distribution Folder on the remote Machine
@@ -186,10 +186,10 @@ and Debian flavors both Systemd and SystemV are supported
 . ANT script: Copy installation properties and cmd or shell files
 . ANT script: Stop the ALM Agent service or daemon if it is running
 . ANT script: Uninstall the previous ALM Agent if requested
-. ANT script: Install the new IKAN ALM Agent: it will start a
+. ANT script: Install the new Kobee Agent: it will start a
 (different) ANT script, that will perform in the same way as the console
-IKAN ALM Agent installation
-. ANT script: Register the IKAN ALM Agent as a Windows service or Linux
+Kobee Agent installation
+. ANT script: Register the Kobee Agent as a Windows service or Linux
 daemon
 . ANT script: Start the registered service or daemon
 . ANT script: cleanup temporary directories
@@ -255,12 +255,12 @@ stored in a _current_ subdirectory of this location.
 The port the Agent will be listening on. The default value is ”20020”.
 
 If you change this value, you will also have to change the ”Agent Port”
-property of the Machine representing this Agent in the IKAN ALM GUI.
+property of the Machine representing this Agent in the Kobee GUI.
 
 |Server Hostname
 |Optional, defaulted to the value of the Machine definition.
 
-The hostname (or IP address) of the IKAN ALM Server machine.
+The hostname (or IP address) of the Kobee Server machine.
 
 The Agent will try to connect to the Server by using this name or IP
 address.
@@ -268,19 +268,19 @@ address.
 |Server Port
 |Optional, defaulted to the value of the Machine definition.
 
-The port the IKAN ALM Server is listening on.
+The port the Kobee Server is listening on.
 
 The Agent will try to connect to the Server on this port. The setting
-can be verified in the IKAN ALM Global administration:
+can be verified in the Kobee Global administration:
 
 Go to _Global Administration > System Settings_
 
-Panel _Local Environment_: the value of “IKAN ALM Server” represents the
-IKAN ALM Server Machine
+Panel _Local Environment_: the value of “Kobee Server” represents the
+Kobee Server Machine
 
 Go to _Global Administration > Machines > Overview_
 
-Check the “Server Port” property of the IKAN ALM Server Machine. If no
+Check the “Server Port” property of the Kobee Server Machine. If no
 Server Port is defined on the ALM Server Machine, port 20021 will be
 used.
 
@@ -291,9 +291,9 @@ Leave this field empty unless you want to override the automatically
 detected hostname of the Agent.
 
 For example, to use a fully qualified domain name like
-`almAgent.your.domain` for communicating with the IKAN ALM server. It is
+`almAgent.your.domain` for communicating with the Kobee server. It is
 important that the hostname entered here matches the DHCP name of the
-Agent Machine (in the IKAN ALM GUI).
+Agent Machine (in the Kobee GUI).
 
 |Agent IP Address
 |Optional.
@@ -302,13 +302,13 @@ Leave this field empty unless you want to override the automatically
 detected IP address of the Agent.
 
 For example, to use an IP Address which differs from the internal IP
-address for communicating with the IKAN ALM server. It is important that
+address for communicating with the Kobee server. It is important that
 the IP address entered here matches the IP address of the Agent Machine
-(in the IKAN ALM GUI).
+(in the Kobee GUI).
 |===
 
 The following first three fields are the port numbers specific to the
-Karaf container hosting the IKAN ALM Agent daemon. Normally, there is no
+Karaf container hosting the Kobee Agent daemon. Normally, there is no
 need to change those port numbers unless you have port conflicts. For
 more information, refer to the Karaf Container 4.0 documentation: https://karaf.apache.org/manual/latest/#_instances[https://karaf.apache.org/manual/latest/#_instances,window=_blank]
 
@@ -335,14 +335,14 @@ The default value is “44444”.
 The default value is “8101”.
 
 |Agent Karaf Logfile Path 
-|Relative path to the Karaf log of the IKAN ALM Agent log.
+|Relative path to the Karaf log of the Kobee Agent log.
 
-This setting is used by the IKAN ALM Server when displaying the Machine
+This setting is used by the Kobee Server when displaying the Machine
 Log of an Agent on the Machine Detailed Status screen.
 
 |Run Agent Uninstaller
 |Flag to indicate if the uninstallation process should run first to
-uninstall the previously installed IKAN ALM agent.
+uninstall the previously installed Kobee agent.
 
 The default value is “Yes”.
 
@@ -368,7 +368,7 @@ Agent service was installed using its default service name and b) if the _uninst
 |Timeout in seconds to wait for the Agent service to stop or start.
 
 |Connection type
-|Connection Type between the IKAN ALM Server and the target Agent
+|Connection Type between the Kobee Server and the target Agent
 Machine. Possible options are SSH (SecureShell) or PowerShell. After you
 have selected the Connection type, the appropriate _SecureShell_ or
 _PowerShell_ panel will be displayed underneath..
@@ -511,7 +511,7 @@ image::image5.png[,311,114]
 Click *_Start Install_* to Start the Agent Installation.
 ====
 
-The Agent Installation will be started by the IKAN ALM Server. The
+The Agent Installation will be started by the Kobee Server. The
 different installation steps will be executed as described in the
 introduction of this chapter. The process will be logged in the _"Agent
 Installation Status"_ panel. Its status will change from _"No
@@ -535,7 +535,7 @@ image::image7.png[,314,123]
 Click *_Abort_* to Abort the Agent Installation.
 ====
 
-The IKAN ALM Server will try to cancel the installation during
+The Kobee Server will try to cancel the installation during
 execution. When you select the _"Force Immediate Abort"_ option the
 server will kill the running processes abruptly.
 

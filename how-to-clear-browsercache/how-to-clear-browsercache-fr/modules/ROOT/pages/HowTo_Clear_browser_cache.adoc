@@ -1,14 +1,14 @@
 // The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
 :imagesdir: ../images
-:description: Comment nettoyer le cache du navigateur après une mise à niveau d'IKAN ALM
-:revnumber: v5.9
-:revdate: 28.01.2022
+:description: Comment nettoyer le cache du navigateur après une mise à niveau de Kobee
+:revnumber: v6.0
+:revdate: 11.08.2023
 
-= Comment nettoyer le cache du navigateur après une mise à niveau d'IKAN ALM
+= Comment nettoyer le cache du navigateur après une mise à niveau de Kobee
 
 == Sujet
 
-Ce document technique explique comment nettoyer le cache du navigateur pour utiliser les nouveaux écrans après une mise à niveau d'IKAN ALM.
+Ce document technique explique comment nettoyer le cache du navigateur pour utiliser les nouveaux écrans après une mise à niveau de Kobee.
 
 == Microsoft Edge
 

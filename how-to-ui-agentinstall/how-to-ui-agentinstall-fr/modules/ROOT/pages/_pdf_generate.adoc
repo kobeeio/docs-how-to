@@ -1,7 +1,7 @@
 :doctype: book
 :TOC:
 :sectnums:
-:title: Installation de l'Agent IKAN ALM via l’application WEB
+:title: Installation de l'Agent Kobee via l’application WEB
 :title-page-background-image: image:../images/_pdf_title_page_background.png[]
 :chapter-label:
 :toc-title: Table des matières
@@ -11,7 +11,7 @@
 Aucune partie de ce document ne peut être reproduite ou transmise à quelque fin ou \
 par quelque moyen que ce soit, électronique ou mécanique, sans l’autorisation explicite \
 et écrite de IKAN Development N.V. \
-Les noms et logos IKAN Development et IKAN ALM et tout autre nom de produits ou \
+Les noms et logos IKAN Development et Kobee et tout autre nom de produits ou \
 de services IKAN sont des marques déposées de IKAN Development N.V. \
 Toutes les autres marques déposées sont la propriété de leurs propriétaires respectifs \
 
