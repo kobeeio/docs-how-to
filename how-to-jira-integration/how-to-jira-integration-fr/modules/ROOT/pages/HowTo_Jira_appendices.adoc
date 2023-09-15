@@ -2,15 +2,15 @@
 
 [appendix]
 [[_mapping_a_jira_system]]
-== Associer un système Jira à un Système de Suivi des Incidents IKAN ALM
+== Associer un système Jira à un Système de Suivi des Incidents Kobee
 
-Il y a plusieurs moyens pour représenter un système Jira dans IKAN ALM.
+Il y a plusieurs moyens pour représenter un système Jira dans Kobee.
 Voici deux exemples expliquant comment spécifier cette association.
 Notez qu'il existe encore d'autres possibilités.
 
-=== (1) Un Système de Suivi des Incidents IKAN ALM qui représente la totalité du système Jira de la Machine hôte.
+=== (1) Un Système de Suivi des Incidents Kobee qui représente la totalité du système Jira de la Machine hôte.
 
-C'est la façon habituelle d'associer Jira à un Système de Suivi des Incidents IKAN ALM.
+C'est la façon habituelle d'associer Jira à un Système de Suivi des Incidents Kobee.
 Pour faire comme cela, vous pouvez spécifier les paramètres suivants:
 
 * URL: dans le format http(s)://<host>:<port>/jira/browse/${issueId}
@@ -19,9 +19,9 @@ Pour faire comme cela, vous pouvez spécifier les paramètres suivants:
 
 Ce Système de Suivi des Incidents associera les Incidents de tous les Projets Jira définis dans le système Jira.
 
-=== (2) Un Système de Suivi des Incidents IKAN ALM par Projet Jira
+=== (2) Un Système de Suivi des Incidents Kobee par Projet Jira
 
-Dans ce cas, un seul système Jira est représenté par plusieurs Systèmes de Suivi des Incidents IKAN ALM, en fonction du Projet.
+Dans ce cas, un seul système Jira est représenté par plusieurs Systèmes de Suivi des Incidents Kobee, en fonction du Projet.
 Cela permet un contrôle plus granulaire de l'intégration du Suivi des Incidents. Vous avez par exemple besoin de droits d'accès différents pour accéder au Projet A ou B, ou vous voulez peut-être ajouter des commentaires pour le Projet A, mais pas pour le projet B, etc.
 
 Pour faire comme cela, vous pouvez spécifier les paramètres suivants:

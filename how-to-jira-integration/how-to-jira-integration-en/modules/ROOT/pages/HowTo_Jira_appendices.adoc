@@ -2,14 +2,14 @@
 
 [appendix]
 [[_mapping_a_jira_system]]
-== Mapping a Jira System to an IKAN ALM Issue Tracking System
+== Mapping a Jira System to an Kobee Issue Tracking System
 
-There are several ways to represent a Jira system in IKAN ALM.
+There are several ways to represent a Jira system in Kobee.
 We give 2 examples on how to map this, but other possibilities exist.
 
-=== One (1) IKAN ALM Issue Tracking System represents the host's entire Jira system
+=== One (1) Kobee Issue Tracking System represents the host's entire Jira system
 
-This is the usual way people map Jira to an IKAN ALM Issue Tracking System.
+This is the usual way people map Jira to an Kobee Issue Tracking System.
 To accomplish this, you set the following properties:
 
 * URL: of the form http(s)://<host>:<port>/jira/browse/${issueId}
@@ -18,9 +18,9 @@ To accomplish this, you set the following properties:
 
 This Issue Tracking System will match issues from all Jira Projects defined in the Jira system.
 
-=== One (1) IKAN ALM Issue Tracking System per Jira Project
+=== One (1) Kobee Issue Tracking System per Jira Project
 
-In this case one Jira system is represented by several IKAN ALM Issue Tracking Systems, on a per-Project basis.
+In this case one Jira system is represented by several Kobee Issue Tracking Systems, on a per-Project basis.
 This allows for more granular control over the Issue Tracking integration.
 Maybe you need different credentials to access ProjectA or ProjectB.
 Maybe you want to add comments to ProjectA, but not to ProjectB, etc...

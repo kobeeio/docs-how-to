@@ -1,15 +1,15 @@
 // The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
 :imagesdir: ../images
 :description: Installation de Jira Comment (Français)
-:revnumber: v5.9
-:revdate: 25.01.2022
+:revnumber: v6.0
+:revdate: 15.09.2023
 
-= Guide pratique pour l'intégration de Jira avec IKAN ALM
+= Guide pratique pour l'intégration de Jira avec Kobee
 
 [[_introduction]]
 == Introduction
 
-La fonctionnalité de Suivi des Incidents d'IKAN ALM permet de relier des Incidents d'un Système de Suivi des Incidents externe à une Requête de niveau IKAN ALM.
+La fonctionnalité de Suivi des Incidents de Kobee permet de relier des Incidents d'un Système de Suivi des Incidents externe à une Requête de niveau Kobee.
 
 Les Incidents peuvent être reliés à une Requête de niveau selon l'une des manières suivantes:
 
@@ -20,21 +20,21 @@ Les Incidents peuvent être reliés à une Requête de niveau selon l'une des ma
 
 [NOTE]
 ====
-Un lien permettant de passer directement de l'Incident dans IKAN ALM vers l'Incident dans l'outil de Suivi des Incidents externe est disponible si l'outil externe dispose d'une interface Web.
+Un lien permettant de passer directement de l'Incident dans Kobee vers l'Incident dans l'outil de Suivi des Incidents externe est disponible si l'outil externe dispose d'une interface Web.
 ====
 
-En plus de cette fonctionnalité de Suivi des Incidents de base, IKAN ALM offre une intégration plus avancée pour Atlassian Jira, Microsoft Team Foundation Server (TFS), MicroFocus ALM et GitHub avec les fonctionnalités additionnelles suivantes:
+En plus de cette fonctionnalité de Suivi des Incidents de base, Kobee offre une intégration plus avancée pour Atlassian Jira, Microsoft Team Foundation Server (TFS), MicroFocus ALM et GitHub avec les fonctionnalités additionnelles suivantes:
 
 * la possibilité de tester la connexion avec le Système de Suivi des Incidents au moment de la création ou de la modification d'une définition de Système de Suivi des Incidents.
-* la synchronisation automatique des incidents traités dans le Système de Suivi des Incidents: IKAN ALM récupère des informations additionnelles, telles que la description, le propriétaire, la priorité, ... de l'Incident (Issue) Jira, de l'élément de travail (Work Item) Team Foundation, du Défaut (Defect) MF ALM ou de l'Incident (Issue) GitHub correspondant. Ces informations seront synchronisées chaque fois que le résultat de construction évoluera dans le Cycle de vie IKAN ALM.
+* la synchronisation automatique des incidents traités dans le Système de Suivi des Incidents: Kobee récupère des informations additionnelles, telles que la description, le propriétaire, la priorité, ... de l'Incident (Issue) Jira, de l'élément de travail (Work Item) Team Foundation, du Défaut (Defect) MF ALM ou de l'Incident (Issue) GitHub correspondant. Ces informations seront synchronisées chaque fois que le résultat de construction évoluera dans le Cycle de vie Kobee.
 * synchronisation manuelle des Incidents associés à une Requête de niveau dans l'onglet "Incidents" de la fenêtre __Informations détaillées__.
-* possibilité d'ajouter automatiquement un commentaire pour un incident/defect/artefact dans Jira/TFS/MF ALM/GitHub après une Requête de niveau réussie. Ce commentaire contiendra un lien vers la Requête de niveau dans IKAN ALM.
+* possibilité d'ajouter automatiquement un commentaire pour un incident/defect/artefact dans Jira/TFS/MF ALM/GitHub après une Requête de niveau réussie. Ce commentaire contiendra un lien vers la Requête de niveau dans Kobee.
 
-Dans ce document, nous nous concentrerons sur la façon d'effectuer l'intégration de Jira avec IKAN ALM.
-D'abord, nous décrirons comment il faut configurer Jira pour qu'IKAN ALM puisse s'y connecter.
-Après, nous expliquerons comment créer un Système de Suivi d'incidents représentant votre système Jira dans IKAN ALM.
-Ensuite, nous décrirons les étapes à suivre pour activer l'intégration de Jira dans un Projet IKAN ALM.
-Finalement, nous donnerons des informations de référence sur l'intégration d'IKAN ALM avec des Systèmes de Suivi des Incidents en général.
+Dans ce document, nous nous concentrerons sur la façon d'effectuer l'intégration de Jira avec Kobee.
+D'abord, nous décrirons comment il faut configurer Jira pour qu'Kobee puisse s'y connecter.
+Après, nous expliquerons comment créer un Système de Suivi d'incidents représentant votre système Jira dans Kobee.
+Ensuite, nous décrirons les étapes à suivre pour activer l'intégration de Jira dans un Projet Kobee.
+Finalement, nous donnerons des informations de référence sur l'intégration de Kobee avec des Systèmes de Suivi des Incidents en général.
 
 
 [[_jira_configurationprerequisites]]
@@ -42,11 +42,11 @@ Finalement, nous donnerons des informations de référence sur l'intégration d'
 
 === Versions Jira supportées
 
-Pour le moment, IKAN ALM peut s'intégrer avec les versions 5.x ou supérieure de Jira.
+Pour le moment, Kobee peut s'intégrer avec les versions 5.x ou supérieure de Jira.
 
 === Activer l'option "Accepter les appels API distants"
 
-IKAN ALM utilise REST pour se connecter à Jira.
+Kobee utilise REST pour se connecter à Jira.
 
 Pour le bon fonctionnement de l'intégration, les appels API distants doivent être activés.
 Vous pouvez vérifier cela comme suit:
@@ -87,18 +87,18 @@ Dans cet exemple, le chemin de contexte est `"/jira"`.
 
 [NOTE]
 ====
-Notez que ce paramètre influence les valeurs du champ "URL complet" et de la propriété "jiraRESTUrl" d'un Système de Suivi des Incidents IKAN ALM.
+Notez que ce paramètre influence les valeurs du champ "URL complet" et de la propriété "jiraRESTUrl" d'un Système de Suivi des Incidents Kobee.
 
 Par exemple, si vous spécifiez "/jira" comme chemin, la valeur du champ "URL complet" sera mise à "http(s)://<host>:<port>/jira/browse/${issueId}".
 ====
 
 
 [[_creatissuetrackingsystem]]
-== Créer un Système de Suivi des Incidents dans IKAN ALM
+== Créer un Système de Suivi des Incidents dans Kobee
 
-Dans IKAN ALM, vous devez d'abord créer le Système de Suivi des Incidents qui représente votre système Jira avant que vous ne puissiez l'assigner et l'utiliser dans un Projet IKAN ALM.
+Dans Kobee, vous devez d'abord créer le Système de Suivi des Incidents qui représente votre système Jira avant que vous ne puissiez l'assigner et l'utiliser dans un Projet Kobee.
 
-. Connectez-vous comme Administrateur IKAN ALM et sélectionnez _Administration globale > Suivi des Incidents > Créer un Système de Suivi_ des Incidents.
+. Connectez-vous comme Administrateur Kobee et sélectionnez _Administration globale > Suivi des Incidents > Créer un Système de Suivi_ des Incidents.
 +
 L'écran _Créer un Système de Suivi des Incidents_ s'affiche:
 +
@@ -116,10 +116,10 @@ image::fig3-1.png[,609,399]
 |Le nom du Système de Suivi des Incidents, comme par exemple "Jira"
 
 |Classe «Plugin Factory» 
-|Le nom complet de la Classe Java qui peut produire des implémentations de l'extension de Système de Suivi des Incidents IKAN ALM.
+|Le nom complet de la Classe Java qui peut produire des implémentations de l'extension de Système de Suivi des Incidents Kobee.
 
 Vous pouvez sélectionner une des valeurs de la liste ou saisir votre propre nom de Classe 
-(<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Associer un système Jira à un Système de Suivi des Incidents IKAN ALM>>).
+(<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Associer un système Jira à un Système de Suivi des Incidents Kobee>>).
 
 Pour Jira, sélectionnez "be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory"
 
@@ -130,7 +130,7 @@ Pour Jira, sélectionnez "be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPlugi
 |L'URL direct vers les détails d'un seul Incident.
 Dans cet URL, la clé de l'Incident est représentée par la variable ${issueId}.
 
-Cette valeur dépend des paramètres spécifiés dans votre système Jira ainsi que de la stratégie que vous utilisez pour associer un système Jira à un Système de Suivi des Incidents IKAN ALM (<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Associer un système Jira à un Système de Suivi des Incidents IKAN ALM>>).
+Cette valeur dépend des paramètres spécifiés dans votre système Jira ainsi que de la stratégie que vous utilisez pour associer un système Jira à un Système de Suivi des Incidents Kobee (<<HowTo_Jira_appendices.adoc#_mapping_a_jira_system,Associer un système Jira à un Système de Suivi des Incidents Kobee>>).
 
 Voici quelques exemples de valeurs:
 
@@ -141,13 +141,13 @@ Voici quelques exemples de valeurs:
 `http(s)://<host>:<port>/browse/PROJECTKEY-${issueId}`
 
 |Utilisateur
-|L'Utilisateur Jira utilisé par IKAN ALM pour se connecter à Jira
+|L'Utilisateur Jira utilisé par Kobee pour se connecter à Jira
 
 |Mot de passe
-|Le Mot de passe de l'utilisateur Jira utilisé par IKAN ALM pour se connecter à Jira
+|Le Mot de passe de l'utilisateur Jira utilisé par Kobee pour se connecter à Jira
 
 |Modèle de recherche de Suivi d'Incident et Modèle d'Identifiant de Suivi d'Incident
-a|Ces deux champs doivent contenir une expression régulière qu'IKAN ALM utilisera pour trouver les clés d'incidents dans les messages saisis lors de l'enregistrement dans le RCV.
+a|Ces deux champs doivent contenir une expression régulière qui Kobee utilisera pour trouver les clés d'incidents dans les messages saisis lors de l'enregistrement dans le RCV.
 Le Modèle de recherche de Suivi d'Incident sert à retrouver une référence vers un Incident dans le texte enregistré.
 Le Modèle d'Identifiant de Suivi d'Incident sert à retrouver l'identifiant de l'Incident (ou la clé) dans la référence de l'Incident correspondant.
 En général, on ne fait pas de distinction entre les deux modèles et les deux auront la même valeur.
@@ -170,7 +170,7 @@ et le Modèle d'identifiant de Suivi d'Incident est spécifié comme
 L'identifiant d'un Incident est composé de minimum 2 lettres en majuscules ou chiffres, suivis d'un tiret (-), suivi de minimum 1 chiffre. Donc, pour un message d'enregistrement suivant: "Résolution des Incidents suivants: WEB-1,WEB-2,WEB3", la référence d'Incident correspondante sera: "Issues: WEB-1,WEB-2,WEB-3" et les identifiants d'Incidents correspondants sont WEB-1, WEB-2, et WEB-3
 
 |Ajouter des Commentaires
-|Si vous établissez cette option à "Oui", IKAN ALM ajoutera un commentaire à l'Incident au moment où il est associé à une Requête de niveau IKAN ALM.
+|Si vous établissez cette option à "Oui", Kobee ajoutera un commentaire à l'Incident au moment où il est associé à une Requête de niveau Kobee.
 Des explications plus détaillées suivent plus loin dans ce document.
 |===
 
@@ -179,7 +179,7 @@ Des explications plus détaillées suivent plus loin dans ce document.
 Vous serez réorienté vers l'écran de modification du Système de Suivi des Incidents nouvellement créé et un avertissement s'affichera en haut de la fenêtre.
 +
 Cet avertissement s'affiche parce l'extension du Système de Suivi des Incidents Jira requiert que la propriété suivante soit spécifiée: jiraRESTUrl.
-Elle représente l'URL de l'API Jira REST et IKAN ALM en a besoin pour établir la connexion avec Jira.
+Elle représente l'URL de l'API Jira REST et Kobee en a besoin pour établir la connexion avec Jira.
 +
 image::fig3-3.png[,1009,337] 
 
@@ -209,14 +209,14 @@ image::fig3-5.png[,603,523]
 +
 Si le test échoue, corrigez les erreurs spécifiées dans la trace de pile et refaites le test.
 +
-Le Système de Suivi des Incidents Jira étant défini, nous pouvons l'utiliser dans nos Projets IKAN ALM.
+Le Système de Suivi des Incidents Jira étant défini, nous pouvons l'utiliser dans nos Projets Kobee.
 
 Pour cela, nous devons associer le Système de Suivi des Incidents à un Projet.
 
 [[_linkissuetrackingsystem]]
 == Associer un Système de Suivi des Incidents à un Projet
 
-. Connectez-vous comme un Utilisateur IKAN ALM avec des droits d'accès d'Administrateur sur le Projet que vous voulez y associer.
+. Connectez-vous comme un Utilisateur Kobee avec des droits d'accès d'Administrateur sur le Projet que vous voulez y associer.
 
 . Naviguez vers _Administration des projets_ et sélectionnez le Projet approprié dans l'__Aperçu des Projets__.
 
@@ -227,7 +227,7 @@ Pour cela, nous devons associer le Système de Suivi des Incidents à un Projet.
 image::fig4-1.png[,599,737] 
 +
 Ensuite, nous devons ajouter la Phase "Suivi des Incidents" à chaque Niveau existant.
-Cela est essentiel car toutes les opérations concernant le Suivi des Incidents effectuées par IKAN ALM sont exécutées pendant la Phase "Suivi des Incidents". Si un Niveau n'a pas de Phase "Suivi des Incidents", aucun Incident ne sera associé aux Requêtes de niveau de ce Niveau et aucun commentaire ne sera ajouté aux Incidents!
+Cela est essentiel car toutes les opérations concernant le Suivi des Incidents effectuées par Kobee sont exécutées pendant la Phase "Suivi des Incidents". Si un Niveau n'a pas de Phase "Suivi des Incidents", aucun Incident ne sera associé aux Requêtes de niveau de ce Niveau et aucun commentaire ne sera ajouté aux Incidents!
 
 . Pour chaque Niveau existant dans le Projet, vous devez effectuer ce qui suit:
 +
@@ -290,13 +290,13 @@ Si vous utilisez la même Phase plusieurs fois, il est utile d'ajouter un libell
 [[_integration]]
 == Intégrer un Système de Suivi des Incidents externe 
 
-Cette section contient des informations détaillées sur l'intégration d'IKAN ALM avec un Système de Suivi des Incidents externe.
-Plus spécifiquement, elle décrit les tâches exécutées par la Phase "Suivi des Incidents" IKAN ALM qui est exécutée pendant une Requête de niveau.
+Cette section contient des informations détaillées sur l'intégration de Kobee avec un Système de Suivi des Incidents externe.
+Plus spécifiquement, elle décrit les tâches exécutées par la Phase "Suivi des Incidents" Kobee qui est exécutée pendant une Requête de niveau.
 
 === Journal de la Phase Suivi des Incidents
 
 Comme déjà indiqué précédemment, toutes les opérations concernant le Suivi des Incidents sont exécutées pendant la Phase "Suivi des Incidents". 
-Les fichiers journaux générés lors de ces opérations peuvent être consultés dans l'Interface Utilisateur IKAN ALM, sur l'onglet "Journaux de Phase" de la page __Informations détaillées__.
+Les fichiers journaux générés lors de ces opérations peuvent être consultés dans l'Interface Utilisateur Kobee, sur l'onglet "Journaux de Phase" de la page __Informations détaillées__.
 
 image::fig5-1.png[,7,808] 
 
@@ -319,12 +319,12 @@ Dans ces messages, les identifiants (les clés) des Incidents sont cherchés en 
 
 Les doubles parmi les incidents trouvés sont retirés et ils sont associés à la Requête de niveau actuelle.
 
-Finalement, IKAN ALM essaie de trouver la correspondance de l'Incident dans le référentiel Jira.
-Si l'Incident est trouvé, la description, le statut, le propriétaire et la priorité sont récupérés à partir de Jira, et cette information est sauvegardée dans la représentation de l'Incident dans IKAN ALM.
+Finalement, Kobee essaie de trouver la correspondance de l'Incident dans le référentiel Jira.
+Si l'Incident est trouvé, la description, le statut, le propriétaire et la priorité sont récupérés à partir de Jira, et cette information est sauvegardée dans la représentation de l'Incident dans Kobee.
 
 === Requêtes de niveau pour délivrer, re-délivrer et restaurer
 
-Si vous créez une Requête de niveau pour un Niveau de Test ou de Production, cela signifie, en termes IKAN ALM, que vous "`délivrez`" vers un Niveau de Test ou de Production.
+Si vous créez une Requête de niveau pour un Niveau de Test ou de Production, cela signifie, en termes Kobee, que vous "`délivrez`" vers un Niveau de Test ou de Production.
 La "`Construction active actuelle`" d'un Niveau est la dernière Construction délivrée réussie sur ce Niveau. 
 
 Nous parlons d'une "`Requête de niveau pour délivrer une Construction`" si vous délivrez une Construction dont le numéro de construction est supérieur à celui de la Construction active actuelle sur ce Niveau. 
@@ -361,25 +361,25 @@ Supposons l'ensemble de Requêtes de niveau (RN) chronologique suivant:
 
 === Ajouter des Commentaires
 
-Outre la récupération de l'information à partir de Jira et l'intégration dans IKAN ALM, l'information sur les Requêtes de niveau IKAN ALM est également intégrée dans Jira sous forme de commentaires aux Incidents Jira.
-La possibilité d'ajouter des commentaires est contrôlée par le champ "Ajouter des Commentaires" dans la définition du Système de Suivi des Incidents IKAN ALM.
+Outre la récupération de l'information à partir de Jira et l'intégration dans Kobee, l'information sur les Requêtes de niveau Kobee est également intégrée dans Jira sous forme de commentaires aux Incidents Jira.
+La possibilité d'ajouter des commentaires est contrôlée par le champ "Ajouter des Commentaires" dans la définition du Système de Suivi des Incidents Kobee.
 
 Actuellement, les commentaires des Incidents ne sont pas configurables et, en général, ils ressemblent à:
 
 image::fig5-4.png[,760,216] 
 
-Comme vous pouvez le constater, le commentaire d'Incident contient un lien direct vers la Requête de niveau IKAN ALM concernée, ce qui permet aux Utilisateurs d'afficher les détails d'une Construction qui résout cet Incident.
+Comme vous pouvez le constater, le commentaire d'Incident contient un lien direct vers la Requête de niveau Kobee concernée, ce qui permet aux Utilisateurs d'afficher les détails d'une Construction qui résout cet Incident.
 
 === Modification et synchronisation manuelle des Incidents
 
 La qualité des liens créés et de la synchronisation dépend de la qualité des modèles de correspondance et de la qualité des messages d'enregistrement.
 Il se peut que les références d'Incident soient oubliés dans les messages d'enregistrement, que tous les identifiants d'Incident ne soient pas analysés ou que des identifiants d'Incident non valides soient analysés (faux résultats positifs). Dans ces cas, il peut être nécessaire d'ajouter, modifier, supprimer et/ou synchroniser les Incidents manuellement.
 
-Heureusement, toutes ces fonctions sont disponibles dans l'Interface Utilisateur IKAN ALM sur l'onglet "Incidents" de la page __Informations détaillées__.
+Heureusement, toutes ces fonctions sont disponibles dans l'Interface Utilisateur Kobee sur l'onglet "Incidents" de la page __Informations détaillées__.
 
 image::fig5-5.png[,660,442] 
 
-Pour plus d'informations, se référer au __Guide de l'Utilisateur IKAN ALM__.
+Pour plus d'informations, se référer au __Guide de l'Utilisateur Kobee__.
 
 
 [[_troubelshooting]]
