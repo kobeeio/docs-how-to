@@ -8,7 +8,7 @@ Always consult the "antora.yml" file in the document to verify, it should contai
 
 * how-to-clear-browsercache 6.0(EN) & 6.0(FR)
 * how-to-github-integration 5.9(EN) & 5.9(FR)
-* how-to-jira-integration 5.9(EN) & 5.9(FR)
+* how-to-jira-integration 6.0(EN) & 6.0(FR)
 * how-to-ui-agentinstall 6.0(EN) & 6.0(FR)
 
 
