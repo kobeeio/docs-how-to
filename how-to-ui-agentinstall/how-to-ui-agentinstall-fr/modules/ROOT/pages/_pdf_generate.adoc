@@ -6,7 +6,7 @@
 :chapter-label:
 :toc-title: Table des matières
 
-:author: IKAN Development N.V., Kardinaal Mercierplein 2, 2800 Malines, BELGIQUE + \
+:author: IKAN Development N.V., Motstraat 30, 2800 Malines, BELGIQUE + \
 (C) 2006 - 2021 IKAN Development N.V. + \
 Aucune partie de ce document ne peut être reproduite ou transmise à quelque fin ou \
 par quelque moyen que ce soit, électronique ou mécanique, sans l’autorisation explicite \
