@@ -1,0 +1,18 @@
+:doctype: book
+:TOC:
+:sectnums:
+:title: Comment implémenter un plugin ITS
+:title-page-background-image: image:../images/_pdf_title_page_background.png[]
+:chapter-label:
+:toc-title: Table des matières
+
+:author: IKAN Development N.V., Motstraat 30, 2800 Malines, BELGIQUE + \
+(C) 2006 - 2026 IKAN Development N.V. + \
+Aucune partie de ce document ne peut être reproduite ou transmise à quelque fin ou \
+par quelque moyen que ce soit, électronique ou mécanique, sans l’autorisation explicite \
+et écrite de IKAN Development N.V. \
+Les noms et logos IKAN Development et Kobee et tout autre nom de produits ou \
+de services IKAN sont des marques déposées de IKAN Development N.V. \
+Toutes les autres marques déposées sont la propriété de leurs propriétaires respectifs \
+
+include::HowTo_ITSPLuginImplement.adoc[]

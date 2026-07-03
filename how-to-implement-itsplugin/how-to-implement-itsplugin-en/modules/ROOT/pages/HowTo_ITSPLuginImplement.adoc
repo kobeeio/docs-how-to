@@ -125,4 +125,6 @@ Alternatively, instead of creating a jar, you can copy your plugin classes to `T
 . Start Tomcat and the Kobee Server
 . In Kobee, create a new Issue Tracking System and set the _Plugin Factory Class_ to the fully qualified class name of your implementation of the ITSPluginFactory interface.
 In the JIRA example, this would be `be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory`.
-. Link the created Issue Tracking System to a Project and add the Issue Phase to existing Levels (if needed). For further information on how to use Issue Tracking in Kobee, please refer to the Kobee User Guide.
+. Link the created Issue Tracking System to a Project and add the Issue Phase to existing Levels (if needed). 
+
+For further information on how to use Issue Tracking in Kobee, please refer to the Kobee User Guide.
