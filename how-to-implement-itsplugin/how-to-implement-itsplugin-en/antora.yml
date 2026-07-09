@@ -1,6 +1,0 @@
-name: how-to-implement-itsplugin-en
-title: Implement ITS Plugin How-to
-version: '6.0'
-start_page: ROOT:HowTo_ITSPLuginImplement.adoc
-nav:
-- modules/ROOT/nav.adoc
