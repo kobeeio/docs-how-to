@@ -1,0 +1,128 @@
+// The imagesdir attribute is only needed to display images during offline editing. Antora neglects the attribute.
+:imagesdir: ../images
+:description: Implement ITS Plugin How-to (Français)
+:revnumber: v6.0
+:revdate: 02.07.2026
+
+= Comment implémenter un plugin ITS
+
+== Objectif
+
+L'architecture d'Kobee permet l'utilisation d'extensions pour intégrer des Systèmes de Suivi des Incidents. Les fournisseurs peuvent écrire leurs propres extensions d'intégration avec un Système de Suivi des Incidents (ITS) et ensuite les déployer pour les intégrer dans Kobee. Ce document explique comment développer et déployer une telle extension.
+
+== Spécifier l'Environnement de développement
+
+Les fichiers requis pour écrire l'extension du Système de Suivi des Incidents Kobee se trouvent dans un fichier .zip nommé __kobee60_its_plugin.zip__. 
+
+La structure des répertoires du fichier zip est la suivante:
+
+* _src/java_
++
+Ce répertoire contient l'extension exemple JiraITSPlugin pour vous montrer comment vous pouvez créer votre propre extension.
+
+* _javadoc_
++
+Ce répertoire contient la documentation API (ouvrez le fichier index.html)
+
+* _lib_
++
+Ce répertoire contient les fichiers jar requis
+
+Effectuez les étapes suivantes pour spécifier votre environnement de développement (par exemple en Eclipse):
+
+. Unzippez le fichier __kobee60_its_plugin.zip__ dans un répertoire ayant le nom que vous voulez utiliser dans votre projet Eclipse.
+. Démarrez Eclipse et sélectionnez: _New > Java Project_.
+. Sélectionnez _Create project from existing source_ et naviguez vers le répertoire où vous avez décompressé le fichier. Si la dénomination du Projet est la même que le répertoire racine de vos sources, Eclipse trouvera automatiquement les répertoires Source et mettra les fichiers jar du répertoire _"lib"_ dans le chemin de classe du projet.
+. Le projet Eclipse requiert les paramètres suivants:
+*  le niveau de conformité du compilateur doit être établi à 11 ou supérieure
+*  Java JDK version 11 ou supérieure
+
+== Implémentation
+
+Essentiellement, vous créez une classe qui étend la classe AbstractITSPlugin et une autre qui implémente l'interface ITSPluginFactory. Ensuite, vous implémentez/écrasez les méthodes requises. Pour un exemple d'implémentation, vérifiez les classes de l'extension Jira (en particulier les classes JiraITSPlugin et JiraITSPluginFactory).
+
+=== classe XyzITSPluginFactory Implémenter l'interface ITSPluginFactory
+
+Créez une classe qui implémente l'interface ITSPluginFactory. La classe DOIT comporter un constructeur "no-argument" puisque ce constructeur sera appelé avec l’utilisation du code Kobee. Implémentez la méthode createITSPlugin() et faites le retourner une instance complètement configurée de votre classe d'implémentation ITSPlugin. L'argument ITSPluginConfiguration sera transmis. Il pourra être utilisé pour initialiser l'objet ITSPlugin.
+
+=== XyzITSPlugin: Étendre l'extension AbstractITSPlugin
+
+Créez une classe qui étend la classe AbstractITSPlugin. Vous pouvez également immédiatement implémenter l'interface ITSPlugin, mais cela n'est pas conseillé. Les méthodes suivantes doivent être implémentées:
+
+==== List<Issue> getIssues(List<String> issueIds)
+
+Celle-ci est la méthode la plus importante à implémenter: Kobee appelle cette méthode pour recevoir des Informations supplémentaires sur les Incidents à partir du Système de Suivi des Incidents externe. La méthode ne requiert qu'un seul argument: une liste d'objets de type chaîne qui reprend les IDs (identifiants) des Incidents à récupérer. La méthode retournera les incidents trouvés sous forme d'une liste des objets be.ikan.scm4all.plugin.issuetracking.Issue.  
+
+[NOTE]
+====
+Tous les membres de la classe "Issue" sont des objets de type chaîne et seront affichés tel quels dans Kobee. Par conséquent, il peut s'avérer intéressant, par exemple, de vérifier la description du statut d'un Incident (par exemple,"RÉSOLU") et de mettre cette description dans l’objet de l'Incident au lieu de mettre le code du statut (par exemple, "3").
+====
+
+==== List<PropertyInfo> getPropertyInfo() 
+
+Pour cette méthode, vous spécifiez quels paramètres personnalisés peuvent/doivent être spécifiés dans l'extension du Système de Suivi des Incidents. Pour chaque propriété utilisée, vous devez créer un objet be.ikan.scm4all.plugin.issuetracking.util.PropertyInfo pour lequel vous spécifiez:
+
+* *name*: le nom de la propriété
+* *defaultValue*: la valeur par défaut de la propriété
+* *description*: une description de la propriété
+* *required*: si la propriété est obligatoire ou optionnelle
+* *secured*: si la valeur de la propriété est sécurisée ou pas.
++
+Si la propriété est sécurisée, sa valeur sera encryptée dans la base de données Kobee. Dans l'interface graphique d'Kobee, sa valeur sera représentée par des astérisques (*)
+* *choices*:  la liste de toutes les valeurs prédéfinies possibles de la propriété. Cette liste apparaîtra comme une liste déroulante dans Kobee
+
+Cette méthode retournera la liste des objets de type "PropertyInfo" qui représente toutes les propriétés qui peuvent être spécifiées pour le Système de Suivi des Incidents.
+
+==== void testConnection()
+
+Cette méthode doit être implémentée pour que, si la connexion avec le Système de Suivi des Incidents en utilisant les propriétés spécifiées réussit, le système fonctionne normalement. Si la connexion échoue, l'exception "IssueTrackingException" sera générée.
+
+==== void validate() 
+
+Cette méthode validera les valeurs de toutes les propriétés du Système de Suivi des Incidents. En cas de valeurs non valides, l'exception "ValidationException" sera générée. 
+
+Elle vérifiera par exemple:
+
+* si une propriété étant spécifiée comme obligatoire, contient une valeur,
+* si la propriété nommée "port", dont la valeur doit être numérique, ne contient pas de caractères alphanumériques,
+* si aucune propriété ne contient des espaces, ...
+
+==== void addCommentToIssue(String issueId, String comment) 
+
+Kobee appellera cette méthode pour ajouter un commentaire à la propriété ou pour modifier une des propriétés d'un Incident spécifié dans le Système de Suivi des Incidents (sans impact dans Kobee). Le premier argument représente l'identifiant de l'Incident et le deuxième représente le commentaire à ajouter. L'idée est de pouvoir faire le suivi dans le Système de Suivi des Incidents de tout ce qui se passe dans Kobee, par exemple, en spécifiant une propriété de promotion de Niveau pour l'Incident ou en ajoutant un commentaire à l'Incident.
+
+==== List<Issue> parseIssues(List<String> vcrCommitMessages)
+
+Il est probable que cette méthode ne doive pas être modifiée. Cette méthode est implémentée dans l'extension AbstractITSPlugin. Elle analyse la liste des messages d'enregistrement du Référentiel de Contrôle de Version (RCV) et cherche les références aux Incidents par l'association de modèles d'expression régulières. Ces modèles d'expressions sont spécifiés dans Kobee et peuvent être récupérés en appelant les méthodes “Getter”: getIssuePattern() et getIssueIdPattern().
+
+Cette méthode retourne une liste d'objets d'Incidents qui correspond aux Incidents analysés sur la base des commentaires d'enregistrement.
+
+==== Méthodes “Getter”
+
+Certaines méthodes "Getter" sont définies pour pouvoir les utiliser pour récupérer les propriétés standard qui peuvent être spécifiées dans tout Système de Suivi des Incidents. En principe, elle ne doivent pas être écrasées. Pour plus d'informations concernant ces propriétés, se référer au chapitre sur les Systèmes de Suivi des Incidents dans le Guide de l'Utilisateur Kobee.
+
+Les méthodes "Getter" sont:
+
+* *getURL()* : retourne l'URL, qui est un lien directe vers les informations détaillées d'un Incident
+* *getUser()* : retourne le Nom d’utilisateur qui doit être utilisé pour établir la connexion avec le Système de Suivi des Incidents
+* *getPassword()* : retourne le Mot de passe qui doit être utilisé pour établir la connexion avec le Système de Suivi des Incidents
+* *getIssuePattern()* : retourne le Modèle de recherche de Suivi d’Incident (expression régulière) utilisé pour analyser les chaînes d'Incident à partir des messages d'enregistrement du RCV
+* *getIssueIdPattern()* :  retourne le Modèle d’Identifiant de Suivi d’Incident (expression régulière) utilisé pour analyser les identifiants à partir des chaînes d'Incident analysées retrouvées dans les messages d'enregistrement du RCV
+* *getProperties()* :  retourne un "Map" contenant les noms et les valeurs des propriétés personnalisées spécifiées dans les Système de Suivi des Incidents
+
+== Déployer l'extension dans Kobee
+
+Dans la section suivante, nous supposons que vous avez installé Kobee dans le répertoire _KOBEE_HOME_,, que vous avez sélectionné Tomcat comme conteneur et que vous l'avez installé dans le répertoire  _TOMCAT_HOME_.
+
+Pour pouvoir utiliser votre extension dans Kobee, vous devez effectuer les étapes suivantes:
+
+. Arrêtez Tomcat et le Serveur Kobee
+. Créez un jar contenant vos classes d'extension et copiez-le dans les répertoires `TOMCAT_HOME/webapps/kobee/WEB-INF/lib et KOBEE_HOME/daemons/server/lib`
+Au lieu de créer un fichier jar, vous pouvez également copier les classes d'extension dans les répertoires `TOMCAT_HOME/webapps/kobee/WEB-INF/classes` et `KOBEE_HOME/daemons/server/classes`
+. Copiez tous les jars tiers requis par votre extension dans les répertoires `TOMCAT_HOME/webapps/kobee/WEB-INF/lib` et `KOBEE_HOME/daemons/server/lib`
+. Démarrez Tomcat et le Serveur Kobee
+. Dans Kobee, créez un nouveau Système de Suivi des Incidents et établissez la valeur du champ Classe "Plugin Factory" au nom complet de la classe de votre implémentation de l'interface ITSPluginFactory.
+. Pour notre exemple Jira, le nom serait "be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory".
+. Associez le Système de Suivi des Incidents créé à un Projet et (si nécessaire) ajoutez la Phase "Incident" aux Niveaux existants
+
+Pour des informations supplémentaires concernant le Suivi des Incidents dans Kobee, se référer au Guide de l'Utilisateur Kobee.
