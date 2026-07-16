@@ -16,17 +16,34 @@ The files that you need for writing an Kobee Issue Tracking System plugin are de
 
 That zip file has the following directory structure:
 
-* _src/java_
+* _src/main/java/_
 +
 Contains the sources of the JiraITSPlugin, as a sample on how to create your own plugin
 
-* _javadoc_
+* _lib/_
 +
-Contains the API documentation (start with index.html)
+Contains the jar files required to compile and run the JiraITSPlugin
 
-* _lib_
+* _tools/_
 +
-Contains the required jar files
+Contains an Ant and Bnd tool distribution
+
+* _.settings/, .classpath, .project_
++
+Contains Eclipse project settings
+
+* _bnd.bnd_
++
+Metadata file required for the BndTools Eclipse plugin (optional)
+
+* _bnd_kobeeio_sampleits.bnd_
++
+Sample Bnd metadata file describing the Sample ITS Plugin Bundle
+
+* _build.cmd, build.xml_
++
+Build scripts for building the ITS Plugin OSGi Bundles
+
 
 Do the following to set up your development environment, for example in Eclipse:
 
@@ -36,22 +53,23 @@ Do the following to set up your development environment, for example in Eclipse:
 . The Eclipse Project needs to have the following properties:
 * compiler compliance Level must be set to 11
 * Java JDK must be 11 or higher
+. Optionally, you can install the BndTools Eclipse plugin, and add the BndTools Nature to the Project
 
 == Implementation
 
-Basically, you create a class that extends the AbstractITSPlugin class and another class that implements the ITSPluginFactory interface. Next, you implement/override the required methods. As an implementation example you can look at the Jira plugin classes (in particular JiraITSPlugin and JiraITSPluginFactory).
+Basically, you create a class that extends the _AbstractITSPlugin_ class and another class that implements the _ITSPluginFactory_ interface. Next, you implement/override the required methods. As an implementation example you can look at the Jira plugin classes (in particular _JiraITSPlugin_ and _JiraITSPluginFactory_). A skeleton implementation is provided in the _SampleITSPlugin_ and _SampleITSPluginFactory_ classes.
 
 === XyzITSPluginFactory class: Implement ITSPluginFactory
 
-Create a class that implements the ITSPluginFactory interface. The class MUST have a no-argument constructor since this constructor will be called using reflection by Kobee code. Implement the method createITSPlugin() and let it return a fully configured instance of your implementing ITSPlugin class. The ITSPluginConfiguration argument is passed. It can be used to initialize your ITSPlugin object.
+Create a class that implements the _ITSPluginFactory_ interface. The class MUST have a no-argument constructor since this constructor will be called using reflection by Kobee code. Implement the method _createITSPlugin()_ and let it return a fully configured instance of your implementing ITSPlugin class. The _ITSPluginConfiguration_ argument is passed. It can be used to initialize your ITSPlugin object.
 
 === XyzITSPlugin: Extend AbstractITSPlugin
 
-Create a class that extends the AbstractITSPlugin class. You could also directly implement the ITSPlugin interface, but this is not recommended. The following methods must be implemented:
+Create a class that extends the _AbstractITSPlugin_ class. You could also directly implement the _ITSPlugin_ interface, but this is not recommended. The following methods must be implemented:
 
 ==== List<Issue> getIssues(List<String> issueIds)
 
-This is the most important method to implement: Kobee calls this method to get additional information on issues from the external Issue Tracking System. The method takes a single argument: a List of String Objects that represent the IDs of the Issues that need to be retrieved. The method should return the found issues, as a list of be.ikan.scm4all.plugin.issuetracking.Issue Objects. 
+This is the most important method to implement: Kobee calls this method to get additional information on issues from the external Issue Tracking System. The method takes a single argument: a List of String Objects that represent the IDs of the Issues that need to be retrieved. The method should return the found issues, as a list of _be.ikan.scm4all.plugin.issuetracking.Issue_ Objects. 
 
 [NOTE]
 ====
@@ -60,7 +78,7 @@ All members of the Issue class are String objects and will be shown in Kobee as-
 
 ==== List<PropertyInfo> getPropertyInfo() 
 
-In this method, you specify which custom properties can/need to be set on the Issue Tracking System plugin. For every property that can be set, you create a be.ikan.scm4all.plugin.issuetracking.util.PropertyInfo object in which you specify:
+In this method, you specify which custom properties can/need to be set on the Issue Tracking System plugin. For every property that can be set, you create a _be.ikan.scm4all.plugin.issuetracking.util.PropertyInfo_ object in which you specify:
 
 * *name*: the name of the property
 * *defaultValue*: the default value of the property
@@ -68,18 +86,18 @@ In this method, you specify which custom properties can/need to be set on the Is
 * *required*: whether the property is required or optional
 * *secured*: whether the value of the property is secure.
 +
-If the property is secure, the its value is encrypted in the Kobee database, and when it is shown in the Kobee GUI, its value is masked by asterisks (*)
+If the property is secured, then its value is encrypted in the Kobee database, and when it is shown in the Kobee GUI, its value is masked by asterisks (*)
 * *choices*: a list of possible predefined values for the property. That list will be shown as a drop-down menu in the Kobee GUI
 
-The method should return a List of PropertyInfo objects that represent the possible properties that can be set on the Issue Tracking System.
+The method should return a List of _PropertyInfo_ objects that represent the possible properties that can be set on the Issue Tracking System.
 
 ==== void testConnection()
 
-This method should be implemented so that if a connection can be established to the Issue Tracking System with the properties specified, it should return normally, but throws an IssueTrackingException when a connection cannot be made.
+This method should be implemented so that if a connection to the Issue Tracking System can be established using the properties specified, it should return normally, but should throw an _IssueTrackingException_ when a connection cannot be made.
 
 ==== void validate() 
 
-This method should validate the values of all properties of the Issue Tracking System, and throw a ValidationException when some of them are invalid. 
+This method should validate the values of all properties of the Issue Tracking System, and throw a _ValidationException_ when some of them are invalid. 
 
 For example:
 
@@ -89,18 +107,17 @@ For example:
 
 ==== void addCommentToIssue(String issueId, String comment) 
 
-This method will be called by Kobee to add a comment to a property or to change a property of a certain issue in the issue tracking system (so no impact on Kobee). The first argument represents the ID of the issue, the second represents the comment that is to be added. The idea is to have some tracking in the Issue Tracking System of what is going on in Kobee, e.g., by setting a promotion level property of the Issue, or by adding a comment to the Issue, ...
+This method will be called by Kobee to add a comment to a property or to change a property of a certain Issue in the Issue Tracking System (so no impact on Kobee). The first argument represents the ID of the Issue, the second represents the comment that is to be added. The idea is to have some tracking in the Issue Tracking System of what is going on in Kobee, e.g., by setting a promotion level property of the Issue, or by adding a comment to the Issue, ...
 
 ==== List<Issue> parseIssues(List<String> vcrCommitMessages)
 
-Probably, this method must not be overridden. This method is implemented in AbstractITSPlugin. It parses the list of Version Control Repository (VCR) commit messages and searches for references to issues by matching regular expression patterns. The patterns 
-are set in the Kobee GUI and can be retrieved by calling the Getter methods: getIssuePattern() and getIssueIdPattern(). The method returns a list of Issue objects that represents the issues parsed from the commit messages.
+Probably, this method must not be overridden. This method is implemented in _AbstractITSPlugin_. It parses the list of Version Control Repository (VCR) commit messages and searches for references to issues by matching regular expression patterns. The patterns are set in the Kobee GUI and can be retrieved by calling the Getter methods: _getIssuePattern()_ and _getIssueIdPattern()_. The method returns a list of _Issue_ objects that represents the issues parsed from the commit messages.
 
 
 ==== Getter methods
 
 Some getter methods are defined that can be used to retrieve the standard properties that can be set on any 
-Issue tracking System. Normally, they do not need to be overridden. Please refer to the chapter on Issue 
+Issue Tracking System. Normally, they do not need to be overridden. Please refer to the chapter on Issue 
 Tracking Systems in the Kobee User Guide for more information on those properties.
 
 The getter methods are:
@@ -112,17 +129,68 @@ The getter methods are:
 * *getIssueIdPattern()* : returns the Issue Id Pattern (Regular Expression) that is used to parse the issue ids from the parsed issue strings that were found in the VCR commit messages
 * *getProperties()* : returns a Map that contains the names and values of the custom properties that are set on the Issue Tracking System
 
+=== Create a .bnd metadata file for your plugin
+
+The Kobee Server runs as an OSGi bundle within Karaf, an OSGi container. As a consequence, all components that the Kobee Server uses, must also run as an OSGi bundle within Karaf, and thus also your custom ITS Plugin. This means your ITS Plugin classes must be packaged inside an OSGi bundle. A build script is provided that does just that, but it needs a .bnd file that contains the metadata information about your ITS Plugin OSGi bundle.
+
+A sample .bnd metadata file is provided for the SampleITSPlugin : _bnd_kobeeio_sampleits.bnd_
+
+[source]
+----
+Bundle-Version: 6.0.0
+Bundle-Name: Kobee Sample ITS Plugin Bundle
+Bundle-SymbolicName: io.kobee.its.sample
+
+Private-Package: io.kobee.its.sample
+	
+Export-Package: io.kobee.its.sample
+
+Bundle-ClassPath: .
+----
+
+So, suppose your plugin class is named com.example.xyz.XyzITSPlugin, then you can create a .bnd file named _bnd_xyzits.bnd_ with contents :
+
+[source]
+----
+Bundle-Version: 1.0.0
+Bundle-Name: Xyz ITS Plugin Bundle
+Bundle-SymbolicName: com.example.xyz
+
+Private-Package: com.example.xyz
+	
+Export-Package: com.example.xyz
+
+Bundle-ClassPath: .
+----
+
+If your plugin depends on additional jar files, then adding those jars to the _lib/_ folder will cause the build script to use these jars when building the OSGi bundle. However, you must make sure these jars are valid OSGi bundles, since they will also need to be deployed to the Karaf runtime of the Kobee Server.
+Normally, the Bnd tool that is used to generate the OSGi bundle will detect the packages that your ITS Bundle classes depend on and generate the proper OSGi metadata for it. In case this doesn't work properly, or if you need more control over the generated "Import-Package" directives, you can add an "Import-Package" directive to the .bnd file. Please consult the documentation of the Bnd tool for detailed information : https://bnd.bndtools.org/
+
+== Building the Plugin
+
+Before you can launch the build scripts that will generate the OSGi bundles for your ITS Plugin, you must edit the _build.cmd_ file and set the _JAVA_HOME_ that will be used to run the _build.xml_ Ant script. The version of this Java runtime must be 11. For example :
+
+`@SET JAVA_HOME=D:\java\jdk-11.0.19+7`
+
+Launch the _build.cmd_ script in a Command Prompt, or as an External Tool in Eclipse. This will generate for each .bnd file in the root directory of the Project an OSGi bundle in the _dist/_ directory.
+
 == Deploying the Plugin to Kobee
 
-In the following section, we assume that you installed Kobee in the folder _KOBEE_HOME_, that you have chosen Tomcat as your container and that it is installed in the folder _TOMCAT_HOME_.
+In the following section, we assume that you installed Kobee in the folder _KOBEE_HOME_, and that Tomcat is installed in the folder _TOMCAT_HOME_.
 
 To use your plugin in Kobee, you need to do the following:
 
-. Shut down Tomcat and the Kobee Server
-. Create a jar containing your plugin classes and copy it to `TOMCAT_HOME/webapps/kobee/WEB-INF/lib` and to `KOBEE_HOME/daemons/server/lib`
-Alternatively, instead of creating a jar, you can copy your plugin classes to `TOMCAT_HOME/webapps/kobee/WEB-INF/classes` and to `KOBEE_HOME/daemons/server/classes`
-. Copy all 3rd party jars that your plugin needs to `TOMCAT_HOME/webapps/kobee/WEB-INF/lib` and to `KOBEE_HOME/daemons/server/lib`
-. Start Tomcat and the Kobee Server
+. Shut down Tomcat. Leave the Kobee Server running.
+. Copy all 3rd party jars that your plugin needs to _TOMCAT_HOME/webapps/alm/WEB-INF/lib_
+. Copy the generated OSGi plugin bundle jar from _dist/_ to _TOMCAT_HOME/webapps/alm/WEB-INF/lib_
+. Copy all 3rd party jars that your plugin needs to _KOBEE_HOME/daemons/server/karaf/deploy_
++
+[NOTE]
+====
+All 3rd party jars that your plugin needs must be valid OSGi bundles
+====
+. Copy the generated OSGi plugin bundle jar from _dist/_ to _KOBEE_HOME/daemons/server/karaf/deploy_
+. Start Tomcat. Make sure the Kobee Server is still running.
 . In Kobee, create a new Issue Tracking System and set the _Plugin Factory Class_ to the fully qualified class name of your implementation of the ITSPluginFactory interface.
 In the JIRA example, this would be `be.ikan.scm4all.plugin.issuetracking.jira.JiraITSPluginFactory`.
 . Link the created Issue Tracking System to a Project and add the Issue Phase to existing Levels (if needed). 
